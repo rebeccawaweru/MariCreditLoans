@@ -1,34 +1,35 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Header,Input,Button,Toast } from "../Components";
 import {Link, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux"
 import 'react-toastify/dist/ReactToastify.css';
 import { toast } from 'react-toastify';
-import { updateUser2 } from "../redux/userSlice";
+import { updateUser2,reset } from "../redux/userSlice";
 import {Formik} from 'formik'
 import * as  Yup from 'yup'
 export default function Login(){
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const {pending} = useSelector(state=>state.user.pending);
+    const {msg,pending,isLoggedin} = useSelector(state=>state.user);
     const validationSchema = Yup.object({
        email: Yup.string().email('Invalid Email').required('Email is required!'),
        password: Yup.string().trim().min(6,'password must have 6 or more characters').required('Password is required')
-
     })
-    const handleLogin = async (values)=>{
-     await  dispatch(updateUser2 ({...values})).then((response)=>{
-         const message = response.payload
-         if(response.payload.success){
-            navigate('/dashboard')
-         }else if(message === 'Network Error' || message === "Request failed with status code 500" ){
-            toast.error('Please check your internet connection and try again') 
-        }else if (message === "Request failed with status code 401"){
-           toast.error('Wrong credentials') 
-           }
-      })
+    const handleLogin = (values)=>{
+     dispatch(updateUser2 ({...values})) 
     }
-  
+    useEffect(()=>{
+      if(isLoggedin){
+         navigate('/dashboard')
+      }
+      if(msg === 'Network Error' || msg === "Request failed with status code 500" ){
+         toast.error('Please check your internet connection and try again') 
+         }else if (msg === "Request failed with status code 401"){
+         toast.error('Incorrect credentials') 
+     }
+     dispatch(reset())
+    },[msg,isLoggedin,dispatch,navigate])
+ 
     return(
         <>
         <Toast/>
@@ -38,7 +39,6 @@ export default function Login(){
            linkName="Signup"
            linkUrl="/signup"
         />
-    
        <Formik
          initialValues={{
             email:'',

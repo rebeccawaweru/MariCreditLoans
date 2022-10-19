@@ -2,10 +2,10 @@ import { Button, Header,Input,Toast } from "../Components"
 import { Formik } from "formik"
 import * as Yup from 'yup'
 import { useSelector,useDispatch } from "react-redux";
-import { register } from "../actions/auth";
-import { signup } from "../redux/userSlice";
-import { useNavigate } from "react-router-dom";
+import { signup,reset } from "../redux/userSlice";
+import {  useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useEffect } from "react";
 const regx = /^\d{10}$/;
 const validationSchema = Yup.object({
     fullname:Yup.string().required('Full name is required'),
@@ -17,28 +17,30 @@ const validationSchema = Yup.object({
 export default function Signup(){
     const navigate = useNavigate()
     const dispatch = useDispatch();
-
+    const {msg,pending} = useSelector(state=>state.user);
     const handleSignup = async(values)=>{
-       await dispatch(signup({...values}))
-       .then((response)=>{
+       dispatch(signup({...values})).then((response)=>{
         if(response.payload.success){
             navigate('/')
-         }else if(response.payload === 'Network Error' || response.payload === "Request failed with status code 500" ){
-            toast.error('Please check your internet connection and try again') 
-        }else if (response.payload === "Request failed with status code 401"){
-           toast.error('Email  already exists') 
-           }
-       })
-      
+        }
+       })   
     }
-    return(
+    useEffect(()=>{
+    if(msg === 'Network Error' || msg === "Request failed with status code 500" ){
+        toast.error('Please check your internet connection and try again') 
+        }else if (msg === "Request failed with status code 401"){
+        toast.error('Email  already exists') 
+    }
+    dispatch(reset())
+  },[msg,pending,dispatch,navigate])
+   return(
    <>
    <Toast/>
    <Header
-         heading="Create an account"
-         paragraph="Already have an account? "
-         linkName="Login"
-         linkUrl="/"
+    heading="Create an account"
+    paragraph="Already have an account? "
+    linkName="Login"
+    linkUrl="/"
    />
    <Formik 
    onSubmit={handleSignup}
@@ -95,7 +97,7 @@ export default function Signup(){
     handleChange={handleChange('confirmpassword')}
     onBlur={handleBlur('confirmpassword')}
     error={touched.confirmpassword && errors.confirmpassword}/>
-    <Button onClick={handleSubmit} title="Signup"/>
+    <Button disabled={pending} onClick={handleSubmit} title="Signup"/>
     </>
     )}}
    </Formik>

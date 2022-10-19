@@ -8,6 +8,7 @@ export const updateUser2 = createAsyncThunk('users/update',async (user, {rejectW
         localStorage.setItem('user', response.data.id);
         return response.data;
     } catch (error) {
+      // return rejectWithValue(error.response.data)  
       return rejectWithValue(error.message)  
     }
 });
@@ -28,7 +29,7 @@ export const getUser = createAsyncThunk('users/getUsers',async(user, {rejectWith
     const response = await axios.get('https://forextradingarena.herokuapp.com/forexarena/user/'+id);
     return response.data.user;
   } catch (error) {
-     return rejectWithValue(error)
+     return rejectWithValue(error.response.data)
   }
 })
 export const userSlice = createSlice({
@@ -36,26 +37,19 @@ export const userSlice = createSlice({
   initialState: {
     userInfo: {
       email: "",
-      phonenumber:''
+      phonenumber:'',
+      fullname:'',
     },
-    fullname:'',
+  
     isLoggedin:false,
     pending: false,
     error: false,
-    message:''
+    msg:'',
   },
   reducers: {
-    updateStart: (state) => {
-      state.pending = true;
-    },
-    updateSuccess: (state, action) => {
-      state.pending = false;
-      state.fullname = action.payload.fullname;
-    },
-    updateFailure: (state) => {
-      state.pending = false;
-      state.error = true;
-    },
+   reset:(state)=>{
+    state.msg = ''
+   }
   },
   extraReducers:{
       [updateUser2.pending]:(state)=>{
@@ -65,13 +59,14 @@ export const userSlice = createSlice({
       },
       [updateUser2.fulfilled]:(state,action)=>{
         state.pending = false;
-        state.message = action.payload;
+        state.msg = action.payload;
         state.isLoggedin = true;
+        state.error = false;
       },
       [updateUser2.rejected]:(state,action)=>{
         state.pending = false;
         state.error = true;
-        state.message = action.payload
+        state.msg = action.payload
         state.isLoggedin = false;
       },
       [signup.pending]:(state)=>{
@@ -81,12 +76,12 @@ export const userSlice = createSlice({
       [signup.fulfilled]:(state,action)=>{
         state.pending = false;
         state.error = false;
-        state.message = action.payload
+        state.msg = action.payload
       },
       [signup.rejected]:(state,action)=>{
         state.pending = false;
         state.error = true;
-        state.message = action.payload
+        state.msg = action.payload
       },
       [getUser.pending]:(state)=>{
         state.pending = true;
@@ -95,12 +90,12 @@ export const userSlice = createSlice({
       [getUser.fulfilled]:(state,action)=>{
         state.pending = false;
         state.error = false;
-        state.fullname = action.payload;
+        state.userInfo = action.payload;
       },
       [getUser.rejected]:(state,action)=>{
         state.pending = false;
         state.error = true;
-        state.message = action.payload;
+        state.msg = action.payload;
       },
 
 
@@ -108,5 +103,5 @@ export const userSlice = createSlice({
 });
 
 // export const {loginStart,loginSuccess,loginFail} = userSlice.actions;
-export const { updateStart, updateSuccess, updateFailure } = userSlice.actions;
+export const { reset } = userSlice.actions;
 export default userSlice.reducer;
