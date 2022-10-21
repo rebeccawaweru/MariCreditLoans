@@ -12,11 +12,37 @@ export const updateUser2 = createAsyncThunk('users/update',async (user, {rejectW
       return rejectWithValue(error.message)  
     }
 });
-
 export const signup = createAsyncThunk('users/signup', async(user, {rejectWithValue})=>{
   try {
     const response = await axios.post('https://forextradingarena.herokuapp.com/forexarena/signup',
     user);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.message)
+  }
+})
+
+export const resetpassword = createAsyncThunk('/users/resetpassword', async(user,{rejectWithValue})=>{
+try {
+  const response = await axios.post('http://localhost:5000/resetpassword',user);
+  return response.data;
+} catch (error) {
+  return rejectWithValue(error.message)
+}
+});
+
+export const confirmpassword = createAsyncThunk('/users/confirmpassword', async(user, {rejectWithValue})=>{
+  try {
+    const response = await axios.post('http://localhost:5000/newpassword',user);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.message)
+  }
+})
+
+export const newpassword = createAsyncThunk('/users/newpassword', async(email, {rejectWithValue})=>{
+  try {
+    const response = await axios.post(`http://localhost:5000/newpassword/${email}`);
     return response.data;
   } catch (error) {
     return rejectWithValue(error.message)
@@ -97,8 +123,48 @@ export const userSlice = createSlice({
         state.error = true;
         state.msg = action.payload;
       },
-
-
+      [resetpassword.pending]:(state)=>{
+       state.pending = true;
+       state.error = false
+      },
+      [resetpassword.fulfilled]:(state,action)=>{
+        state.pending = false;
+        state.error = false;
+        state.msg = action.payload;
+      },
+      [resetpassword.rejected]:(state,action)=>{
+        state.pending = false;
+        state.error = true;
+        state.msg = action.payload;
+      },
+      [confirmpassword.pending]:(state)=>{
+        state.pending = true;
+        state.error = false
+       },
+       [confirmpassword.fulfilled]:(state,action)=>{
+         state.pending = false;
+         state.error = false;
+         state.userInfo = action.payload;
+       },
+       [confirmpassword.rejected]:(state,action)=>{
+         state.pending = false;
+         state.error = true;
+         state.msg = action.payload;
+       },
+      [newpassword.pending]:(state)=>{
+        state.pending = true;
+        state.error = false
+       },
+       [newpassword.fulfilled]:(state,action)=>{
+         state.pending = false;
+         state.error = false;
+         state.msg = action.payload;
+       },
+       [newpassword.rejected]:(state,action)=>{
+         state.pending = false;
+         state.error = true;
+         state.msg = action.payload;
+       }
   }
 });
 

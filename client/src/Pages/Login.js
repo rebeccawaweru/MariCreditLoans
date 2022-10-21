@@ -77,7 +77,7 @@ export default function Login(){
         handleChange={handleChange('password')}
         />
         <div className="text-sm float-right">
-        <Link className="text-black-600 hover:text-purple-600 " to="/">Forgot Password?</Link>
+        <Link className="text-black-600 hover:text-purple-600 " to="/reset">Forgot Password?</Link>
         </div>
         <Button disabled={pending} onClick={handleSubmit} title="Login"/>
         </>
