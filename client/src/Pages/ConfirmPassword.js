@@ -1,6 +1,6 @@
 import { Header,Input,Button,Toast} from "../Components";
 import { useSelector,useDispatch } from "react-redux";
-import { confirmpassword,newpassword} from "../redux/userSlice";
+import { confirmpassword,newpassword,reset} from "../redux/userSlice";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -14,10 +14,10 @@ export default function ConfrimPassword(){
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [confirm,setConfirm] = useState(false);
-    const {otp,setOtp} = useState(0);
-    const {pending,userInfo,msg} = useSelector(state=>state.user);
+    const [otp,setOtp] = useState(0);
+    const {pending,msg} = useSelector(state=>state.user);
     const handleConfirm =async()=>{
-    await dispatch(confirmpassword(otp)).then((response)=>{
+    await dispatch(confirmpassword({otp})).then((response)=>{
         if(response.payload.success){
         setConfirm(true);
         }
@@ -37,7 +37,8 @@ export default function ConfrimPassword(){
         }else if(msg === 'Network Error' || msg === "Request failed with status code 500" ){
             toast.error('Please check your internet connection and try again') 
         }
-    },[dispatch,msg,navigate,pending,userInfo])
+        dispatch(reset())
+    },[dispatch,msg,navigate,pending])
     return(
     <>
    {confirm ? 

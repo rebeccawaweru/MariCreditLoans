@@ -33,23 +33,25 @@ try {
 
 export const confirmpassword = createAsyncThunk('/users/confirmpassword', async(user, {rejectWithValue})=>{
   try {
-    const response = await axios.post('http://localhost:5000/newpassword',user);
+    const response = await axios.post('http://localhost:5000/confirmpassword',user);
+    localStorage.setItem('email', response.data.user.email);
     return response.data;
   } catch (error) {
     return rejectWithValue(error.message)
   }
 })
 
-export const newpassword = createAsyncThunk('/users/newpassword', async(email, {rejectWithValue})=>{
+export const newpassword = createAsyncThunk('/users/newpassword', async(user,{rejectWithValue})=>{
   try {
-    const response = await axios.post(`http://localhost:5000/newpassword/${email}`);
+    const email = localStorage.getItem('email');
+    const response = await axios.post(`http://localhost:5000/newpassword/${email}`, user);
     return response.data;
   } catch (error) {
     return rejectWithValue(error.message)
   }
 })
 
-export const getUser = createAsyncThunk('users/getUsers',async(user, {rejectWithValue})=>{
+export const getUser = createAsyncThunk('users/getUsers',async({rejectWithValue})=>{
   try {
     const id = localStorage.getItem('user')
     const response = await axios.get('https://forextradingarena.herokuapp.com/forexarena/user/'+id);
@@ -141,10 +143,9 @@ export const userSlice = createSlice({
         state.pending = true;
         state.error = false
        },
-       [confirmpassword.fulfilled]:(state,action)=>{
+       [confirmpassword.fulfilled]:(state)=>{
          state.pending = false;
          state.error = false;
-         state.userInfo = action.payload;
        },
        [confirmpassword.rejected]:(state,action)=>{
          state.pending = false;
@@ -156,6 +157,7 @@ export const userSlice = createSlice({
         state.error = false
        },
        [newpassword.fulfilled]:(state,action)=>{
+          localStorage.removeItem('email');
          state.pending = false;
          state.error = false;
          state.msg = action.payload;
