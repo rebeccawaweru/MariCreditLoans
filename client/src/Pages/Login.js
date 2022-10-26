@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Header,Input,Button,Toast } from "../Components";
+import { Header,Input,Button,Toast,AuthWrapper } from "../Components";
 import {Link, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux"
 import 'react-toastify/dist/ReactToastify.css';
@@ -31,7 +31,7 @@ export default function Login(){
     },[msg,isLoggedin,dispatch,navigate])
  
     return(
-        <>
+        <AuthWrapper props>
         <Toast/>
         <Header
            heading="Login to your account"
@@ -57,7 +57,7 @@ export default function Login(){
      const{email,password}= values
      return(
     <>
-        <Input
+   <Input
         type='email'
         name="email" 
         error={touched.email && errors.email}
@@ -84,6 +84,6 @@ export default function Login(){
      )}}
         </Formik>
     
-   </>
+   </AuthWrapper>
     )
 }

@@ -1,4 +1,4 @@
-import { Header,Input,Button,Toast} from "../Components";
+import { Header,Input,Button,Toast,AuthWrapper} from "../Components";
 import { useSelector,useDispatch } from "react-redux";
 import { confirmpassword,newpassword,reset} from "../redux/userSlice";
 import { useEffect, useState } from "react";
@@ -40,7 +40,7 @@ export default function ConfrimPassword(){
         dispatch(reset())
     },[dispatch,msg,navigate,pending])
     return(
-    <>
+    <AuthWrapper>
    {confirm ? 
    <>
    <Toast/>
@@ -97,6 +97,6 @@ export default function ConfrimPassword(){
    />
    <Button disabled={pending} onClick={handleConfirm} title='Submit'/> 
    </> }  
-  </>
+  </AuthWrapper>
     )
 }

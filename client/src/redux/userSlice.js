@@ -51,13 +51,13 @@ export const newpassword = createAsyncThunk('/users/newpassword', async(user,{re
   }
 })
 
-export const getUser = createAsyncThunk('users/getUsers',async({rejectWithValue})=>{
+export const getUser = createAsyncThunk('users/getUsers',async(user,{rejectWithValue})=>{
   try {
     const id = localStorage.getItem('user')
     const response = await axios.get('https://forextradingarena.herokuapp.com/forexarena/user/'+id);
     return response.data.user;
   } catch (error) {
-     return rejectWithValue(error.response.data)
+     return rejectWithValue(error.message)
   }
 })
 export const userSlice = createSlice({
@@ -119,11 +119,13 @@ export const userSlice = createSlice({
         state.pending = false;
         state.error = false;
         state.userInfo = action.payload;
+        state.isLoggedin = true;
       },
       [getUser.rejected]:(state,action)=>{
         state.pending = false;
         state.error = true;
         state.msg = action.payload;
+
       },
       [resetpassword.pending]:(state)=>{
        state.pending = true;

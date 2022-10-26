@@ -1,4 +1,4 @@
-import { Button, Header,Input,Toast } from "../Components"
+import { AuthWrapper, Button, Header,Input,Toast } from "../Components"
 import { Formik } from "formik"
 import * as Yup from 'yup'
 import { useSelector,useDispatch } from "react-redux";
@@ -34,7 +34,7 @@ export default function Signup(){
     dispatch(reset())
   },[msg,pending,dispatch,navigate])
    return(
-   <>
+   <AuthWrapper>
    <Toast/>
    <Header
     heading="Create an account"
@@ -101,7 +101,7 @@ export default function Signup(){
     </>
     )}}
    </Formik>
-   </>
+   </AuthWrapper>
     )
 }
 

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import {Header,Input,Button} from '../Components';
+import {Header,Input,Button, AuthWrapper} from '../Components';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch,useSelector} from 'react-redux';
@@ -30,9 +30,9 @@ export default function ResetPassword(){
             toast.error('Please check your internet connection and try again') 
         }   
        dispatch(reset())
-    },[dispatch,msg,pending])
+    },[dispatch,msg,pending,navigate])
     return(
-     <>
+     <AuthWrapper>
      <Toast/>
     <Header 
     heading='Reset Password'
@@ -67,6 +67,6 @@ export default function ResetPassword(){
     </>
     )}}
     </Formik>
-     </>
+     </AuthWrapper>
     )
 }
