@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Header,Input,Button,Toast } from "../Components";
+import { Header,Input,Button,Toast,AuthWrapper } from "../Components";
 import {Link, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux"
 import 'react-toastify/dist/ReactToastify.css';
@@ -7,6 +7,8 @@ import { toast } from 'react-toastify';
 import { updateUser2,reset } from "../redux/userSlice";
 import {Formik} from 'formik'
 import * as  Yup from 'yup'
+import {FcLock} from 'react-icons/fc'
+import {TfiEmail} from 'react-icons/tfi'
 export default function Login(){
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -31,7 +33,7 @@ export default function Login(){
     },[msg,isLoggedin,dispatch,navigate])
  
     return(
-        <>
+        <AuthWrapper props>
         <Toast/>
         <Header
            heading="Login to your account"
@@ -57,7 +59,7 @@ export default function Login(){
      const{email,password}= values
      return(
     <>
-        <Input
+   <Input
         type='email'
         name="email" 
         error={touched.email && errors.email}
@@ -66,6 +68,7 @@ export default function Login(){
         handleChange={handleChange('email')}
         labelText="Email"
         placeholder="Email"
+        icon={<TfiEmail/>}
         />
         <Input
         type='password'
@@ -75,6 +78,7 @@ export default function Login(){
         onBlur={handleBlur('password')}
         value={password}
         handleChange={handleChange('password')}
+        icon={<FcLock/>}
         />
         <div className="text-sm float-right">
         <Link className="text-black-600 hover:text-purple-600 " to="/reset">Forgot Password?</Link>
@@ -84,6 +88,6 @@ export default function Login(){
      )}}
         </Formik>
     
-   </>
+   </AuthWrapper>
     )
 }

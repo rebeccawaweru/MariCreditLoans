@@ -8,9 +8,9 @@ export default function Header({
 }){
     const name = useSelector(state=>state.user.name)
     return(
-    <div className="mb-10">
+    <div className="mb-6">
         <div className="flex justify-center">
-            <img className="h-14 w-14" alt="" src="https://ik.imagekit.io/pibjyepn7p9/Lilac_Navy_Simple_Line_Business_Logo_CGktk8RHK.png?ik-sdk-version=javascript-1.4.3&updatedAt=1649962071315"/>
+            <img className="h-10 w-10" alt="" src="https://ik.imagekit.io/pibjyepn7p9/Lilac_Navy_Simple_Line_Business_Logo_CGktk8RHK.png?ik-sdk-version=javascript-1.4.3&updatedAt=1649962071315"/>
             <p>{name}</p>
         </div>
         <h2 className="font-extrabold text-center mt-6 text-3xl text-gray-900">{heading}</h2>

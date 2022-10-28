@@ -53,8 +53,8 @@ const confirmPassword = async(req,res)=>{
     user.save().then((user)=>{
         res.status(StatusCodes.ACCEPTED).json({success:true, user})
     })
-    .catch(err=>res.json(err.message))
     })
+    .catch(err=>res.json(err.message))
 }
 const newpassword = async(req,res)=>{
     const {email:userEmail} = req.params;

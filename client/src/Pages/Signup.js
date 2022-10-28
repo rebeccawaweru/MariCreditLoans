@@ -1,4 +1,4 @@
-import { Button, Header,Input,Toast } from "../Components"
+import { AuthWrapper, Button, Header,Input,Toast } from "../Components"
 import { Formik } from "formik"
 import * as Yup from 'yup'
 import { useSelector,useDispatch } from "react-redux";
@@ -6,6 +6,9 @@ import { signup,reset } from "../redux/userSlice";
 import {  useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
+import {FcLock,FcPhone} from 'react-icons/fc'
+import {TfiEmail} from 'react-icons/tfi'
+import {MdOutlinePersonPin} from 'react-icons/md'
 const regx = /^\d{10}$/;
 const validationSchema = Yup.object({
     fullname:Yup.string().required('Full name is required'),
@@ -34,7 +37,7 @@ export default function Signup(){
     dispatch(reset())
   },[msg,pending,dispatch,navigate])
    return(
-   <>
+   <AuthWrapper>
    <Toast/>
    <Header
     heading="Create an account"
@@ -63,45 +66,54 @@ export default function Signup(){
     const {fullname,email,phonenumber,password,confirmpassword}= values;
     return(
     <>
-    <Input 
+      <div className="grid grid-cols-2 space-x-2">
+      <Input 
     placeholder="Full Name"
     name='fullname'
     value={fullname}
     handleChange={handleChange('fullname')}
     onBlur={handleBlur('fullname')}
-    error={touched.fullname && errors.fullname}/>
+    error={touched.fullname && errors.fullname}
+    icon={<MdOutlinePersonPin/>}/>
     <Input 
     placeholder="Email"
     name='email'
     value={email}
     handleChange={handleChange('email')}
     onBlur={handleBlur('email')}
-    error={touched.email && errors.email}/>
+    error={touched.email && errors.email}
+    icon={<TfiEmail/>}
+    />
+      </div>
+ 
     <Input placeholder="Phone Number"
     name='phonenumber'
     value={phonenumber}
     handleChange={handleChange('phonenumber')}
     onBlur={handleBlur('phonenumber')}
-    error={touched.phonenumber && errors.phonenumber}/>
+    error={touched.phonenumber && errors.phonenumber}
+    icon={<FcPhone/>}/>
     <Input
     placeholder="Password"
     name='password'
     value={password}
     handleChange={handleChange('password')}
     onBlur={handleBlur('password')}
-    error={touched.password && errors.password}/>
+    error={touched.password && errors.password}
+    icon={<FcLock/>}/>
     <Input
     placeholder="Confirm Password"
     name='confirmpassword'
     value={confirmpassword}
     handleChange={handleChange('confirmpassword')}
     onBlur={handleBlur('confirmpassword')}
+    icon={<FcLock/>}
     error={touched.confirmpassword && errors.confirmpassword}/>
     <Button disabled={pending} onClick={handleSubmit} title="Signup"/>
     </>
     )}}
    </Formik>
-   </>
+   </AuthWrapper>
     )
 }
 

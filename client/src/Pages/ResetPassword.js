@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import {Header,Input,Button} from '../Components';
+import {Header,Input,Button, AuthWrapper} from '../Components';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch,useSelector} from 'react-redux';
@@ -7,6 +7,7 @@ import { reset, resetpassword } from '../redux/userSlice';
 import {Toast} from '../Components'
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import {TfiEmail} from 'react-icons/tfi'
 const validationSchema = Yup.object({
     email:Yup.string().email('Invalid Email').required('Email field is required')
 })
@@ -30,9 +31,9 @@ export default function ResetPassword(){
             toast.error('Please check your internet connection and try again') 
         }   
        dispatch(reset())
-    },[dispatch,msg,pending])
+    },[dispatch,msg,pending,navigate])
     return(
-     <>
+     <AuthWrapper>
      <Toast/>
     <Header 
     heading='Reset Password'
@@ -62,11 +63,12 @@ export default function ResetPassword(){
     value={email}
     handleChange={handleChange('email')}
     labelText="Email"
-    placeholder="Email"/>
+    placeholder="Email"
+    icon={<TfiEmail/>}/>
     <Button disabled={pending} title='Submit' onClick={handleSubmit}/>
     </>
     )}}
     </Formik>
-     </>
+     </AuthWrapper>
     )
 }

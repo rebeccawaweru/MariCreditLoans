@@ -1,11 +1,12 @@
-import { Header,Input,Button,Toast} from "../Components";
+import { Header,Input,Button,Toast,AuthWrapper} from "../Components";
 import { useSelector,useDispatch } from "react-redux";
-import { confirmpassword,newpassword} from "../redux/userSlice";
+import { confirmpassword,newpassword,reset} from "../redux/userSlice";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Formik } from "formik";
 import * as Yup from 'yup';
+import {FcLock} from 'react-icons/fc'
 const validationSchema = Yup.object({
     password:Yup.string().trim().min(6,'Password must be contain 6 or more characters').required('Password is required'),
     confirmpassword:Yup.string().equals([Yup.ref('password'),null], 'Passwords do not match!').required('Kindly confirm password')
@@ -14,10 +15,10 @@ export default function ConfrimPassword(){
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [confirm,setConfirm] = useState(false);
-    const {otp,setOtp} = useState(0);
-    const {pending,userInfo,msg} = useSelector(state=>state.user);
+    const [otp,setOtp] = useState(0);
+    const {pending,msg} = useSelector(state=>state.user);
     const handleConfirm =async()=>{
-    await dispatch(confirmpassword(otp)).then((response)=>{
+    await dispatch(confirmpassword({otp})).then((response)=>{
         if(response.payload.success){
         setConfirm(true);
         }
@@ -37,9 +38,10 @@ export default function ConfrimPassword(){
         }else if(msg === 'Network Error' || msg === "Request failed with status code 500" ){
             toast.error('Please check your internet connection and try again') 
         }
-    },[dispatch,msg,navigate,pending,userInfo])
+        dispatch(reset())
+    },[dispatch,msg,navigate,pending])
     return(
-    <>
+    <AuthWrapper>
    {confirm ? 
    <>
    <Toast/>
@@ -71,6 +73,7 @@ export default function ConfrimPassword(){
    handleChange={handleChange('password')}
    error={touched.password && errors.password}
    onBlur={handleBlur('password')}
+   icon={<FcLock/>}
    />
    <Input
    type='password'
@@ -80,6 +83,7 @@ export default function ConfrimPassword(){
    handleChange={handleChange('confirmpassword')}
    error={touched.confirmpassword && errors.confirmpassword}
    onBlur={handleBlur('confirmpassword')}
+   icon={<FcLock/>}
    />
    <Button disabled={pending} onClick={handleSubmit} title='Submit'/>
     </> )
@@ -93,9 +97,10 @@ export default function ConfrimPassword(){
    <Input
    value={otp}
    handleChange={(e)=>setOtp(e.target.value)}
+   icon={<FcLock/>}
    />
    <Button disabled={pending} onClick={handleConfirm} title='Submit'/> 
    </> }  
-  </>
+  </AuthWrapper>
     )
 }
