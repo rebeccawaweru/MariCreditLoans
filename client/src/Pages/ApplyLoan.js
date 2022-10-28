@@ -113,7 +113,6 @@ const ApplyLoan = ()=>{
         setPeriod(false)
     }
     const handlePeriod = ()=>{
-
         setPeriod(false);
         setComplete(true)
     }
