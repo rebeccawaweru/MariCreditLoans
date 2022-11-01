@@ -9,14 +9,8 @@ updateProduct,
 deleteProduct,
 newProduct} = require('../controllers/products')
 
-
 router.route('/product').get(getAllProducts).post(newProduct)
-
+router.route('/product/:id').get(getProduct).patch(updateProduct).delete(deleteProduct)
 // router.post('/:user', permissionMiddleware, newProduct)
-// router.get('/:id/:user', permissionMiddleware, getProduct)
-// router.put('/:id/:user', permissionMiddleware, updateProduct)
-// router.delete('/:id/:user', permissionMiddleware, deleteProduct)
-
-// router.route('/:id/:user', permissionMiddleware).post(newProduct).get(getProduct).put(updateProduct).delete(deleteProduct)
 
 module.exports = router

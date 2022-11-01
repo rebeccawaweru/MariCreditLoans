@@ -4,12 +4,12 @@ const {getloans,getloan,creatloan,updateloan,deleteloan,myloans,loanrequest,getU
 // const permissionMiddleware = require('../middleware/permissions')
 
 router.route('/loan').get(getloans).post(creatloan);
-
+router.route('/loan/:id').get(getloan).patch(updateloan).delete(deleteloan);
 
 // router.route('/userloans/:phone/:user', permissionMiddleware).get(getUserloans)
-// router.route('/:id').get(getloan)
 
-// router.route('/:id/:user', permissionMiddleware).put(updateloan)
+
+
 
 // router.delete('/:id/:user', permissionMiddleware,deleteloan)
 

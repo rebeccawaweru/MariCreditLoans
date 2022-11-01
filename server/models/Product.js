@@ -9,6 +9,10 @@ const productSchema = mongoose.Schema({
         type:Number,
         required:true,
     },
+    per:{
+        type:String,
+        required:true,
+    },
     addedBy: {
         type:String,
         required: [true, 'Please provide user'],

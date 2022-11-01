@@ -24,17 +24,21 @@ export default function Signup(){
     const handleSignup = async(values)=>{
        dispatch(signup({...values})).then((response)=>{
         if(response.payload.success){
-            navigate('/')
+          toast.success('Signup successfull')
+            setTimeout(()=>{
+              navigate('/login')
+            },3000)
+          
         }
        })   
     }
     useEffect(()=>{
     if(msg === 'Network Error' || msg === "Request failed with status code 500" ){
         toast.error('Please check your internet connection and try again') 
-        }else if (msg === "Request failed with status code 401"){
+        }else if (msg === "Request failed with status code 400"){
         toast.error('Email  already exists') 
     }
-    dispatch(reset())
+ 
   },[msg,pending,dispatch,navigate])
    return(
    <AuthWrapper>
@@ -43,7 +47,7 @@ export default function Signup(){
     heading="Create an account"
     paragraph="Already have an account? "
     linkName="Login"
-    linkUrl="/"
+    linkUrl="/login"
    />
    <Formik 
    onSubmit={handleSignup}

@@ -64,9 +64,13 @@ const loanSchema = mongoose.Schema({
         type:Number,
         required:true,
     },
+    balance:{
+        type:Number,
+        required:true,
+    },
     request:{
         type:String,
-        default:"pending",
+        default:"Pending",
         trim:true,
     },
     active:{
@@ -82,6 +86,14 @@ const loanSchema = mongoose.Schema({
         type:String,
         trim:true,
     },
+    initiation:{
+       type:String,
+       default:'-'
+    },
+    due:{
+        type:String,
+        default:'-'
+    }
  
 //    emergency1: {
 //         type:Number,

@@ -14,7 +14,7 @@ const register = async(req,res)=>{
 const {fullname,phonenumber,email,password} = req.body;
 const findUser = await User.findOne({email});
 if(findUser){
-    res.status(StatusCodes.BAD_REQUEST).send({success:false,message:'User already exists'});
+    res.status(StatusCodes.BAD_REQUEST).json({message:'User already exists'});
 }
 const salt = await bcrypt.genSalt(10);
 const hashedpassword = await bcrypt.hash(password, salt);
@@ -22,8 +22,34 @@ const user = await User.create({fullname,phonenumber,email,password:hashedpasswo
 res.status(StatusCodes.OK).json({success:true, user})
 };
 const login = async(req,res)=>{
-    const {email,password} = req.body;
-    
+    const {email, password} = req.body;
+    if(!email || !password){
+        res.status(StatusCodes.BAD_REQUEST).send({success:false,message:'Please provide the required credentials'})
+    }
+    const user = await User.findOne({email})
+    const id = user._id
+    if(!user){
+        res.status(StatusCodes.NOT_FOUND).send({success:false,message:'Email does not exist'})
+    }
+    const isPasswordCorrect = await user.comparePassword(password)
+  if(!isPasswordCorrect){
+    res.status(StatusCodes.UNAUTHORIZED).send({success:false,message:'Wrong Credentials'})
+   }
+     res.status(StatusCodes.OK).json(id)
+}
+
+const getUsers = async (req,res)=>{
+    const user = await User.find({})
+    res.status(StatusCodes.OK).json({success:true,user})
+}
+//get specific user
+const getUser = async (req,res) =>{
+    const {id:userId} = req.params;
+    const user = await User.findById({_id:userId});
+    if(!user){
+        res.status(StatusCodes).json({message:'User does not exist'})
+    }
+    res.status(StatusCodes.OK).json({success:true,user})
 }
 const resetpassword = async(req,res)=>{
 const {email} = req.body;
@@ -71,4 +97,4 @@ const newpassword = async(req,res)=>{
 
        
 }
-module.exports = {register,resetpassword,confirmPassword,newpassword,login}
+module.exports = {getUser,getUsers,register,resetpassword,confirmPassword,newpassword,login}

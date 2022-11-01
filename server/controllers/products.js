@@ -1,65 +1,49 @@
 const Product = require('../models/Product')
-// const {BadRequestError, UnauthenticatedError, NotFoundError, CustomAPIError} = require('../errors')
 const { StatusCodes } = require('http-status-codes');
 
 //loanproducts
 const newProduct = async(req,res)=>{
-    try {
-        const product = await Product.create(req.body)
-        res.status(StatusCodes.CREATED).json({success:true, product})   
-    } catch (error) {
-        return (error=>res.json(error.message))
+    const {name,interest,per,addedBy} = req.body
+    const findName = await Product.findOne({name});
+    if(findName){
+        res.status(StatusCodes.BAD_REQUEST).json({message:'Product with existing name already exists'})
     }
+    const product = await Product.create({name,interest,per,addedBy})
+    res.status(StatusCodes.CREATED).json({success:true, product})   
+   
 }
 const getAllProducts = async(req,res)=>{
-    try {
-        const product = await Product.find({})
-        res.status(StatusCodes.OK).json({success:true, product})  
-    } catch (error) {
-            return (error=>res.json(error.message))  
-    }
+    const product = await Product.find({})
+    res.status(StatusCodes.OK).json({success:true, product})  
+  
 }
 const getProduct = async(req,res)=>{
-    try {
     const {id:productId} = req.params;
     const product = await Product.findById({_id:productId})
     if(!product){
-    throw new NotFoundError('Product does not exist')
+    res.status(StatusCodes.NOT_FOUND).json('Product does not exist')
     }
     res.status(StatusCodes.OK).json({success:true, product})  
-    } catch (error) {
-        return (error=>res.json(error.message))    
-    }
 }
 
 const updateProduct = async(req,res)=>{
-    try {
     const {id:productId} = req.params
     const product = await Product.findByIdAndUpdate({_id:productId},req.body,
     {new:true,
     runValidators:true,
     })
-    res.status(StatusCodes.OK).json({success:true, product})   
     if(!product){
        res.status(StatusCodes.NOT_FOUND).json({message:'No product to update'})
     }
-    } catch (error) {
-        return (error=>res.json(error.message));  
-    }
-   
+    res.status(StatusCodes.OK).json({success:true, product});
 }
 const deleteProduct = async(req,res)=>{
-    try {
         const {id:productId} = req.params
         const product = await Product.findByIdAndDelete({_id:productId})
         if(!product){
             res.status(StatusCodes.NOT_FOUND).json({message:'No product to delete'})
         }
-        res.status(StatusCodes.OK).json({message:'Product deleted'})  
-    } catch (error) {
-        return (error=>res.json(error.message));  
-    }
-    
+        res.status(StatusCodes.OK).json({success:true, message:'Product deleted'})  
 }
 // const findInterest = async(req,res)=>{
 //     const {name:productname} = req.params

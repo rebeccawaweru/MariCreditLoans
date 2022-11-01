@@ -9,6 +9,7 @@ import {Formik} from 'formik'
 import * as  Yup from 'yup'
 import {FcLock} from 'react-icons/fc'
 import {TfiEmail} from 'react-icons/tfi'
+
 export default function Login(){
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -18,7 +19,7 @@ export default function Login(){
        password: Yup.string().trim().min(6,'password must have 6 or more characters').required('Password is required')
     })
     const handleLogin = (values)=>{
-     dispatch(updateUser2 ({...values})) 
+     dispatch(updateUser2 ({...values}))
     }
     useEffect(()=>{
       if(isLoggedin){
@@ -29,7 +30,7 @@ export default function Login(){
          }else if (msg === "Request failed with status code 401"){
          toast.error('Incorrect credentials') 
      }
-     dispatch(reset())
+    
     },[msg,isLoggedin,dispatch,navigate])
  
     return(

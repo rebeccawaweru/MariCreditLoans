@@ -1,22 +1,23 @@
-import { Button, DashboardWrapper,Input,Toast } from "../Components";
-import { FcNext,FcPrevious,FcClock,FcMoneyTransfer,FcBriefcase,FcPackage,FcPhone,FcStatistics } from "react-icons/fc";
+import { Button, DashboardWrapper,Input,Toast } from "../../Components";
+import { FcNext,FcPrevious,FcClock,FcMoneyTransfer,FcBriefcase,FcPackage,FcPhone,} from "react-icons/fc";
 import {TiBusinessCard} from "react-icons/ti"
 import {TfiEmail} from 'react-icons/tfi'
 import {MdOutlinePersonPin} from 'react-icons/md'
 import {CgSandClock} from 'react-icons/cg'
-import {CiPercent} from 'react-icons/ci'
 import {GiReceiveMoney} from 'react-icons/gi'
 import { useEffect, useState } from "react";
 import { Formik } from "formik";
 import * as Yup from 'yup';
-import { Details } from "./Components";
-import axios from "axios";
-import { toast } from "react-toastify";
+import { Details } from "../Components";
 import { useNavigate } from "react-router-dom";
+import { useDispatch,useSelector } from "react-redux";
+import { newLoan } from "../../redux/loanSlice";
+import { getProducts } from "../../redux/productSlice";
 const regx = /^\d{10}$/;
-
 const ApplyLoan = ()=>{
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const {data} = useSelector(state=>state.product)
     const validationSchema = Yup.object({
         fullname:Yup.string().required('Kindly enter fullname as it appears in your ID').trim().min(6,'Kindly enter fullname as it appears in your ID' ),
         email:Yup.string().email('Invalid Email').required('Email is required'),
@@ -36,11 +37,10 @@ const ApplyLoan = ()=>{
     const [complete,setComplete] = useState(false)
     const [upload,setUpload] = useState(false)
     const [front,setFront] = useState('');
-    const [back,setBack] = useState('')
-    const [message,setMessage] = useState('')
-    const [data,setData] = useState([])
+    const [back,setBack] = useState('');
+    const [message,setMessage] = useState('');
+    const [loading,setLoading] = useState(true)
     const [totalinterest,setTotalInterest] = useState('')
-    
     const handleFront=async(e)=>{
         e.preventDefault();
         const files = e.target.files;
@@ -126,64 +126,57 @@ const ApplyLoan = ()=>{
         let products = data.filter(function (product) {
             return product.name == values.loanproduct;
         })
-        console.log(products[0].interest)
-        if(values.loanperiod === "Months"){
-            setTotalInterest(  values.loanamount *products[0].interest/100 *values.loantenature/12)
-            
+        if(values.loanperiod === "Months" ){
+            setTotalInterest( values.loanamount *products[0].interest/100 *values.loantenature)
+            setLoading(false)
          }else if(values.loanperiod === "Weeks"){
-             setTotalInterest( values.loanamount *products[0].interest/100 *values.loantenature/52)    
+             setTotalInterest( values.loanamount *products[0].interest/100 *values.loantenature/4) 
+             setLoading(false)   
          }else if(values.loanperiod === "Days"){
-             setTotalInterest(  values.loanamount *products[0].interest/100 *values.loantenature/365)
+             setTotalInterest(  values.loanamount *products[0].interest/100 *values.loantenature/30)
+             setLoading(false)
          }else{
-             setTotalInterest(  values.loanamount *products[0].interest/100 *values.loantenature)    
-               }
-    
-       
+             setTotalInterest(  values.loanamount *products[0].interest/100 *values.loantenature*12)
+             setLoading(false)    
+         }
          const finalAmount = Number(totalinterest) + parseInt(values.loanamount)
+        //  {!loading &&  
+        //     dispatch(newLoan({
+        //         fullname:values.fullname,
+        //         phonenumber:Number(values.phonenumber),
+        //         email:values.email,
+        //         idnumber:Number(values.id),
+        //         job:values.job,
+        //         product:values.loanproduct,
+        //         amount:Number(values.loanamount),
+        //         period:values.loanperiod,
+        //         tenature:Number(values.loantenature),
+        //         front:front,
+        //         back:back,
+        //         rate:products[0].interest,
+        //         interest:totalinterest,
+        //         finalAmount:finalAmount,
+        //         balance:finalAmount
+        //     })).then((response)=>{
+        //        if(response.payload.success){
+        //           setTimeout(()=>{
+        //             navigate('/loans')
+        //           },3000)
+        //        }
+        //     })  
+        //  }
      
-         setTimeout(()=>{
-             axios.post('http://localhost:5000/loan',{
-                fullname:values.fullname,
-                phonenumber:Number(values.phonenumber),
-                email:values.email,
-                idnumber:Number(values.id),
-                job:values.job,
-                product:values.loanproduct,
-                amount:Number(values.loanamount),
-                period:values.loanperiod,
-                tenature:Number(values.loantenature),
-                front:front,
-                back:back,
-                rate:products[0].interest,
-                interest:totalinterest,
-                finalAmount:finalAmount,
-            }).then((response)=>{
-               if(response.data.success){
-                console.log(response.data)
-                  toast.success('Loan request sent successfully');
-                  setTimeout(()=>{
-                    navigate('/dashboard')
-                  },3000)
-               }
-            })  
-         },2000)
      } catch (error) {
         console.log(error)
      }
    }
-   async function getProducts(){
-    await axios.get('http://localhost:5000/product').then((response)=>{
-       setData(response.data.product)
-    })
-  
-   }
    useEffect(()=>{
-    getProducts();
-   },[data])
+    dispatch(getProducts());
+   },[])
     return(
     <DashboardWrapper>
         <Toast/>
-     <div className=" items-center justify-center py-2 pl-1 pr-3  md:ml-20 lg:ml-5 ">
+     <div className=" items-center justify-center py-2 pl-1 pr-3  md:ml-20 lg:ml-5  ">
         <Formik
         initialValues={{
             fullname:'',
@@ -318,7 +311,7 @@ const ApplyLoan = ()=>{
             >
             <option value = ''>Select Loan Product</option>
             {data.map((u,key)=>{
-                return<option key={key} value={u.name}>{u.name} - {u.interest}% p.a</option>
+                return<option key={key} value={u.name}>{u.name} - {u.interest}% p.m</option>
 
             })}
             </select> 
@@ -361,20 +354,7 @@ const ApplyLoan = ()=>{
         </div>}
         {period && <div>
             <p>Loan Period </p>  
-            <select
-            value={loanperiod}
-            onChange={handleChange('loanperiod')}
-            onBlur={handleBlur('loanperiod')}
-            name="loanperiod" 
-            id="loanperiod" 
-            className="w-full mt-2 rounded-md appearance-none relative block w-full  px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm">
-             <option value="">Choose period unit</option>
-            <option value="Years">Years</option>
-            <option value="Months">Months</option>
-            <option value="Weeks">Weeks</option>
-            <option value="Days">Days</option>
-            </select> 
-            {!loanperiod && touched.loanperiod && <div className="text-center text-red-600 text-sm pt-2">Period Unit is required</div>}
+            <div className="grid grid-cols-2 space-x-2">
             <Input
              name='loantenature'
              type='text'
@@ -384,7 +364,23 @@ const ApplyLoan = ()=>{
              error={touched.loantenature && errors.loantenature}
             placeholder='e.g 3'
             icon={<CgSandClock/>}
-            />    
+            /> 
+              <select
+            value={loanperiod}
+            onChange={handleChange('loanperiod')}
+            onBlur={handleBlur('loanperiod')}
+            name="loanperiod" 
+            id="loanperiod" 
+            className="h-14 mt-5  rounded-md appearance-none relative block w-full  px-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm">
+             <option value="">Choose period unit</option>
+            <option value="Years">Years</option>
+            <option value="Months">Months</option>
+            <option value="Weeks">Weeks</option>
+            <option value="Days">Days</option>
+            </select> 
+            </div>
+            {!loanperiod && touched.loanperiod && <div className="text-center text-red-600 text-sm pt-2">Period Unit is required</div>}
+              
             <div className="flex justify-between space-x-48">
             <div onClick={handleAmount2} className="flex mt-5">
             <FcPrevious className="text-lg "/>
@@ -449,9 +445,6 @@ const ApplyLoan = ()=>{
                <div className="w-4/5 h-40">
                 <img src={back} alt='' className="h-full w-full"/>
                </div>
-                    
-                 
-              
                 </div>
                
               

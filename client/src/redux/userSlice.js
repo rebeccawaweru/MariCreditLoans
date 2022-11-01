@@ -1,11 +1,12 @@
 import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import client from "../api/client";
+
 
 export const updateUser2 = createAsyncThunk('users/update',async (user, {rejectWithValue})=>{
     try { 
-        const response = await axios.post('https://forextradingarena.herokuapp.com/forexarena/login',
+        const response = await client.post('login',
         user);
-        localStorage.setItem('user', response.data.id);
+        localStorage.setItem('user', response.data);
         return response.data;
     } catch (error) {
       // return rejectWithValue(error.response.data)  
@@ -14,7 +15,7 @@ export const updateUser2 = createAsyncThunk('users/update',async (user, {rejectW
 });
 export const signup = createAsyncThunk('users/signup', async(user, {rejectWithValue})=>{
   try {
-    const response = await axios.post('https://forextradingarena.herokuapp.com/forexarena/signup',
+    const response = await client.post('newuser',
     user);
     return response.data;
   } catch (error) {
@@ -24,7 +25,7 @@ export const signup = createAsyncThunk('users/signup', async(user, {rejectWithVa
 
 export const resetpassword = createAsyncThunk('/users/resetpassword', async(user,{rejectWithValue})=>{
 try {
-  const response = await axios.post('http://localhost:5000/resetpassword',user);
+  const response = await client.post('resetpassword',user);
   return response.data;
 } catch (error) {
   return rejectWithValue(error.message)
@@ -33,7 +34,7 @@ try {
 
 export const confirmpassword = createAsyncThunk('/users/confirmpassword', async(user, {rejectWithValue})=>{
   try {
-    const response = await axios.post('http://localhost:5000/confirmpassword',user);
+    const response = await client.post('confirmpassword',user);
     localStorage.setItem('email', response.data.user.email);
     return response.data;
   } catch (error) {
@@ -44,22 +45,33 @@ export const confirmpassword = createAsyncThunk('/users/confirmpassword', async(
 export const newpassword = createAsyncThunk('/users/newpassword', async(user,{rejectWithValue})=>{
   try {
     const email = localStorage.getItem('email');
-    const response = await axios.post(`http://localhost:5000/newpassword/${email}`, user);
+    const response = await client.post(`newpassword/${email}`, user);
     return response.data;
   } catch (error) {
     return rejectWithValue(error.message)
   }
 })
 
-export const getUser = createAsyncThunk('users/getUsers',async(user,{rejectWithValue})=>{
+export const getUser = createAsyncThunk('users/getUser',async(user,{rejectWithValue})=>{
   try {
     const id = localStorage.getItem('user')
-    const response = await axios.get('https://forextradingarena.herokuapp.com/forexarena/user/'+id);
+    const response = await client.get('user/'+id);
     return response.data.user;
   } catch (error) {
      return rejectWithValue(error.message)
   }
 })
+
+export const getUsers = createAsyncThunk('users/getUsers',async(user, {rejectWithValue})=>{
+  try {
+    const response = await client.get('users');
+    return response.data.user
+  } catch (error) {
+    return rejectWithValue(error.message)
+  }
+})
+
+
 export const userSlice = createSlice({
   name: "user",
   initialState: {
@@ -73,10 +85,16 @@ export const userSlice = createSlice({
     pending: false,
     error: false,
     msg:'',
+    data:[]
   },
   reducers: {
    reset:(state)=>{
     state.msg = ''
+   },
+   logout:(state)=>{
+    state.isLoggedin = false;
+    state.userInfo = {};
+    localStorage.removeItem('user')
    }
   },
   extraReducers:{
@@ -125,7 +143,20 @@ export const userSlice = createSlice({
         state.pending = false;
         state.error = true;
         state.msg = action.payload;
-
+      },
+      [getUsers.pending]:(state)=>{
+        state.pending = true;
+        state.error = false;
+      },
+      [getUsers.fulfilled]:(state,action)=>{
+        state.pending = false;
+        state.error = false;
+        state.data = action.payload;
+      },
+      [getUsers.rejected]:(state,action)=>{
+        state.pending = false;
+        state.error = true;
+        state.msg = action.payload;
       },
       [resetpassword.pending]:(state)=>{
        state.pending = true;
@@ -173,5 +204,5 @@ export const userSlice = createSlice({
 });
 
 // export const {loginStart,loginSuccess,loginFail} = userSlice.actions;
-export const { reset } = userSlice.actions;
+export const { reset,logout } = userSlice.actions;
 export default userSlice.reducer;
