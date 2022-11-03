@@ -43,14 +43,9 @@ export default function Products(){
     {
       field: 'interest',
       headerName: 'Rate',
-      width: 70,
+      width: 100,
       editable: true,
-    },
-    {
-      field: 'per',
-      headerName: '',
-      width: 70,
-      editable: true,
+      valueFormatter:({ value }) => value + '% p.m'
     },
     {
       field: 'addedBy',

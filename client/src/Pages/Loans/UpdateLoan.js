@@ -77,113 +77,93 @@ export default function UpdateLoan(){
         setuserBack(File.url)
     }
     const handleSubmit =async()=>{
-     
+        setA(values.useramount || amount) ;
+        const b =  values.useramount || amount
         const p = values.userproduct || product
-        let products = data.filter(function (product) {
-            return product.name == p;
-        })
+            let products = data.filter(function (product) {
+                return product.name == p;
+            })
+        const n = values.userperiod || period
+        const t = values.usertenature || tenature
+        if(n  === "Months"){
+            setTotalInterest(parseInt(b)*products[0].interest/100*t)    
+             setDays(t*30)
+             setLoading(false)
+         }else if(n  === "Weeks"){
+            setTotalInterest(parseInt(b)*products[0].interest/100 *t/4)  
+            setDays(t*7)     
+            setLoading(false) 
+         }else if(n  === "Days"){
+            setTotalInterest(parseInt(b)*products[0].interest/100 *t/30)
+            setDays(t*1)  
+            setLoading(false)  
+         }else if(n  === "Years"){
+             setTotalInterest(parseInt(b)*products[0].interest/100*t*12) 
+             setDays(t*365)   
+             setLoading(false)    
+        }
         setPr(products[0].interest)
-       
-      
-            setTimeout(()=>{
-                if(!loading && values.userequest === "Approved"  ){
-                    var date = new Date();
-                    date.setDate(date.getDate() + days);
-                    setinitialDate(date.setDate(date.getDate()))
-                    var date2 = new Date(date),
-                    mnth = ("0" + (date2.getMonth() + 1)).slice(-2),
-                    day = ("0" + date2.getDate()).slice(-2);
-                     setdueDate([date.getFullYear(), mnth, day].join("-")) 
-                   console.log(duedate)
-                   console.log(days)
-                    setinitialDate(new Date().toISOString().slice(0, 10)) ;
-                    setOpen(true)
-                }else if(!loading && values.userequest === "Rejected" || values.userequest === "Pending" ){
-                    setdueDate('-');
-                    setinitialDate('-')
-                    setOpen(true)
-                }else if(!loading && request === "Approved"){
-                   toast.error('Cannot update Approved Loan')
-                }else if(!loading && request === "Rejected" || request === "Pending"){
-                    setdueDate('-');
-                    setinitialDate('-')
-                    setOpen(true)
-                }
-            },[2000])     
+        setOpen(true)   
+           
     }
 
     const handleConfirm = async(e)=>{
-    // e.preventDefault()
-    // {!loading &&  
-    //     setTimeout(()=>{
-    //     const userfinalAmount = Number(totalinterest) + parseInt(a)
-
-    //     console.log(userfinalAmount)
-    //        dispatch(updateLoan({
-    //          fullname:userfullname|| fullname,
-    //          email:useremail || email,
-    //          phonenumber:Number(userphonenumber) || phonenumber,
-    //          idnumber:Number(useridnumber) || idnumber,
-    //          job:userjob || job,
-    //          product:userproduct || product,
-    //          rate:pr || rate,
-    //          interest:totalinterest || interest,
-    //          finalAmount:userfinalAmount,
-    //          balance:userfinalAmount || finalAmount,
-    //          amount:Number(useramount) || amount,
-    //          tenature:Number(usertenature) || tenature,
-    //          period:userperiod || period,
-    //          request:userequest || request,
-    //          front:userFront || front,
-    //          back:userBack || back ,
-    //          due:duedate,
-    //          initiation:initialdate
-    //        })).then((response)=>{
-    //            if(response.payload.success){
-    //                setTimeout(()=>{
-    //                   navigate('/loans')
-    //                },2000)
-    //            }
-    //        })
-    //  },1000) }
-        
-    }
+    e.preventDefault();
+        const userfinalAmount = Number(totalinterest) + parseInt(a)
+        console.log(userfinalAmount)
+           dispatch(updateLoan({
+             fullname:userfullname|| fullname,
+             email:useremail || email,
+             phonenumber:Number(userphonenumber) || phonenumber,
+             idnumber:Number(useridnumber) || idnumber,
+             job:userjob || job,
+             product:userproduct || product,
+             rate:pr || rate,
+             interest:totalinterest || interest,
+             finalAmount:userfinalAmount,
+             balance:userfinalAmount || finalAmount,
+             amount:Number(useramount) || amount,
+             tenature:Number(usertenature) || tenature,
+             period:userperiod || period,
+             request:userequest || request,
+             front:userFront || front,
+             back:userBack || back ,
+             due:duedate,
+             initiation:initialdate
+           })).then((response)=>{
+               if(response.payload.success){
+                   setTimeout(()=>{
+                      navigate('/loans')
+                   },2000)
+               }
+           });
+        }
     useEffect(()=>{
-    //     dispatch(getLoan());
-    //     dispatch(getProducts());
-    //     setA(values.useramount || amount) ;
-    //     const b =  values.useramount || amount
-    //     const p = values.userproduct || product
-    //         let products = data.filter(function (product) {
-    //             return product.name == p;
-    //         })
-    // const n = values.userperiod || period
-    // const t = values.usertenature || tenature
-    // setTimeout(()=>{
-
-    //     if(n  === "Months"){
-    //         setTotalInterest(parseInt(b)*products[0].interest/100*t)    
-    //          setDays(t*30)
-    //          setLoading(false)
-    //          console.log(b)
-    //          console.log(products[0].interest/100)
-    //          console.log(t)
-    //                console.log(totalinterest)
-    //      }else if(n  === "Weeks"){
-    //         setTotalInterest(parseInt(b)*products[0].interest/100 *t/4)  
-    //         setDays(t*7)     
-    //         setLoading(false) 
-    //      }else if(n  === "Days"){
-    //         setTotalInterest(parseInt(b)*products[0].interest/100 *t/30)
-    //         setDays(t*1)  
-    //         setLoading(false)  
-    //      }else if(n  === "Years"){
-    //          setTotalInterest(parseInt(b)*products[0].interest/100*t*12) 
-    //          setDays(t*365)   
-    //          setLoading(false)    
-    //     }
-    // },2000);
-
+        dispatch(getLoan());
+        dispatch(getProducts());
+        if(days !== 0 && values.userequest === "Approved"  ){
+            var date = new Date();
+            date.setDate(date.getDate() + days);
+            setinitialDate(date.setDate(date.getDate()))
+            var date2 = new Date(date),
+            mnth = ("0" + (date2.getMonth() + 1)).slice(-2),
+            day = ("0" + date2.getDate()).slice(-2);
+             setdueDate([date.getFullYear(), mnth, day].join("-")) 
+           console.log(duedate)
+           console.log(days)
+            setinitialDate(new Date().toISOString().slice(0, 10)) ;
+          
+        }else if(days !== 0 && values.userequest === "Rejected" || values.userequest === "Pending" ){
+            setdueDate('-');
+            setinitialDate('-')
+     
+        }else if(days !== 0 && request === "Approved"){
+           toast.error('Cannot update Approved Loan')
+        }else if(!loading && request === "Rejected" || request === "Pending"){
+            setdueDate('-');
+            setinitialDate('-')
+         
+        }
     },[])
     return(
         <DashboardWrapper>
@@ -224,7 +204,7 @@ export default function UpdateLoan(){
             value={userperiod}
             onChange={onChange}
             className="h-14 mt-5  rounded-md appearance-none relative block w-full  px-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm">
-             <option value=''>''</option>
+             <option value={period}>{period}</option>
             <option value="Years">Years</option>
             <option value="Months">Months</option>
             <option value="Weeks">Weeks</option>

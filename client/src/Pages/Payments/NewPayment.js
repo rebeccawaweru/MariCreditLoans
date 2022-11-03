@@ -7,12 +7,13 @@ import { useNavigate } from "react-router-dom";
 import { updateLoan,getLoan } from "../../redux/loanSlice";
 import client from "../../api/client";
 import { toast } from "react-toastify";
+import { confirmPayment } from "../../redux/paymentSlice";
 export default function NewPayment(){
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const id = localStorage.getItem('loan')
-    const {email} = useSelector(state=>state.user.userInfo)
-    const {fullname,idnumber,phonenumber,product,_id,balance} = useSelector(state=>state.loan.loanInfo);
+    const email2 = useSelector(state=>state.user.userInfo.email)
+    const {fullname,idnumber,phonenumber,product,_id,balance,email} = useSelector(state=>state.loan.loanInfo);
     const [data,setData] = useState({
         amount:'',
         mode:'',
@@ -32,7 +33,7 @@ export default function NewPayment(){
             product:product,
             amount:Number(amount),
             mode:mode,
-            addedBy:email
+            addedBy:email2
         }).then((response)=>{
             console.log(response)
         if(response.data.success){
@@ -41,12 +42,22 @@ export default function NewPayment(){
             dispatch(updateLoan({
               balance:r
             })).then((response)=>{
-                console.log(response.payload)
-                if(response.payload.success)
-                   toast.success('Payment added successfully')
-                setTimeout(()=>{
-                    navigate('/payments')
-                    },3000)
+                 if(response.payload.success){
+                    dispatch(confirmPayment({
+                       email:email,
+                       fullname:fullname,
+                       amount:amount,
+                       balance:r, 
+                    })).then((response)=>{
+                        console.log(response)
+                        if(response.payload.success){
+                            setTimeout(()=>{
+                                navigate('/viewpayment/'+id)
+                            },3000)
+                        }
+                    })
+                 }
+             
             })
         }
      })

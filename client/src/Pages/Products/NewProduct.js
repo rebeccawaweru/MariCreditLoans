@@ -18,7 +18,7 @@ export default function NewProduct(){
         dispatch(newProduct({
             name:name,
             interest:Number(rate),
-            per:per,
+            per:'p.m',
             addedBy:fullname
         }))
         if(success){
@@ -43,7 +43,7 @@ export default function NewProduct(){
           onChange={(e)=>setPer(e.target.value)}
           className=" h-14 mt-5  rounded-md appearance-none relative block w-full  px-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm">
             <option value='p.m'>p.m</option>
-            <option value='p.a'>p.a</option>
+            {/* <option value='p.a'>p.a</option> */}
           </select>
         </div>
       

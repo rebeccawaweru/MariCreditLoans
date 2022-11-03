@@ -1,8 +1,8 @@
 import  React,{useState,useEffect} from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid} from '@mui/x-data-grid';
-import {FcInfo,FcFullTrash,FcEditImage,FcAddDatabase} from 'react-icons/fc'
-import { DashboardWrapper,CustomModal, Toast } from '../../Components';
+import {FcInfo,FcFullTrash,FcEditImage,FcAddDatabase,FcPrint} from 'react-icons/fc'
+import { DashboardWrapper,CustomModal, Toast,ExportExcel } from '../../Components';
 import { useDispatch,useSelector } from 'react-redux';
 import { deleteLoan,getLoans } from '../../redux/loanSlice';
 import { useNavigate } from 'react-router-dom';
@@ -49,13 +49,13 @@ export default function Loans() {
     {
       field: 'idnumber',
       headerName: 'ID Number',
-      width: 100,
+      width: 90,
       editable: true,
     },
     {
       field: 'product',
       headerName: 'Product',
-      width: 100,
+      width: 120,
       editable: true,
     },
     {
@@ -70,7 +70,7 @@ export default function Loans() {
       headerName: 'Rate',
       width: 100,
       editable: true,
-      valueFormatter:({ value }) => value + '%'
+      valueFormatter:({ value }) => value + '% p.m'
     },
     {
       field: 'tenature',
@@ -140,7 +140,11 @@ export default function Loans() {
     <DashboardWrapper>
       <Toast/>
       <div className='float-right text-blue-500 py-2 font-bold flex hover:text-black' onClick={()=>navigate('/apply')}><FcAddDatabase className='text-xl'/>Add Loan</div>
-        <p className="text-blue-500 py-2 font-bold "> Loans</p>
+        <p className="text-blue-500 py-2 font-bold">Loans</p>
+        <div className="mb-2 flex space-x-2">
+         <ExportExcel apiData={data} fileName='All Loans' />
+         <FcPrint className="text-3xl" onClick={()=>window.print()}/>
+         </div>
     <Box sx={{ height: 450,
        width: '100%',
        fontFamily:'arial',

@@ -77,6 +77,9 @@ export const loanSlice = createSlice({
         state.error = false;
       },
       [newLoan.rejected]:(state,action)=>{
+        if(action.payload === 'Network Error'){
+          toast.error('Please check your internet and try again')
+        }
         state.pending = false;
         state.error = true;
         state.success = false
@@ -128,6 +131,9 @@ export const loanSlice = createSlice({
         state.error = false;
       },
       [updateLoan.rejected]:(state,action)=>{
+        if(action.payload === 'Network Error'){
+          toast.error('Please check your internet and try again')
+        }
         state.pending = false;
         state.error = true;
         state.success = false

@@ -26,7 +26,7 @@ const ApplyLoan = ()=>{
         job:Yup.string().required('Occupation is required'),
         // loanproduct:Yup.string().required('Please choose loan product'),
         loanamount:Yup.string().required('Amount is required'),
-        loanperiod:Yup.string().required('Please choose period'),
+   
         loantenature:Yup.string().required('Please input tenature')
     
     })
@@ -39,8 +39,29 @@ const ApplyLoan = ()=>{
     const [front,setFront] = useState('');
     const [back,setBack] = useState('');
     const [message,setMessage] = useState('');
-    const [loading,setLoading] = useState(true)
+    const [loanperiod,setloanPeriod] = useState('')
+    const [product2,setProduct2] = useState('')
     const [totalinterest,setTotalInterest] = useState('')
+
+   const [values,setValues] = useState({
+            fullname:'',
+            phonenumber:'',
+            email:'',
+            id:'',
+            job:'',
+            loanproduct:'',
+            loanamount:'',
+            loantenature:'',
+   });
+   const {fullname,phonenumber,email,id,job,loanproduct,loanamount,loantenature} = values;
+   const onChange = (e)=>{
+    setValues({...values, [e.target.name]:e.target.value})
+   };
+
+    const handleChangePeriod = (e)=>{
+        setloanPeriod(e.target.value)
+    
+    }
     const handleFront=async(e)=>{
         e.preventDefault();
         const files = e.target.files;
@@ -109,67 +130,61 @@ const ApplyLoan = ()=>{
         setPeriod(true)
     }
     const handleAmount2 = ()=>{
+        // setValues({...values, loantenature:''})
+        // console.log(loantenature)
         setAmount(true);
         setPeriod(false)
     }
     const handlePeriod = ()=>{
+        let products = data.filter(function (product) {
+            return product.name == loanproduct;
+        })
+        setProduct2(products[0].interest);
+        if(loanperiod === 'Months'){
+            console.log(loanamount)
+         setTotalInterest(loanamount* products[0].interest/100 *loantenature)    
+        }else if(loanperiod === 'Weeks'){
+        setTotalInterest(loanamount* products[0].interest/100 *loantenature/4)   
+        }else if(loanperiod === 'Days'){
+            setTotalInterest(loanamount* products[0].interest/100 *loantenature/30)     
+        }else if(loanperiod === 'Years'){
+            setTotalInterest(loanamount* products[0].interest/100 *loantenature*12) 
+        }
         setPeriod(false);
         setComplete(true)
     }
     const handlePeriod2 = ()=>{
+      
         setPeriod(true);
         setComplete(false)
     }
    
-    const handleComplete = async(values)=>{
-     try {
-        let products = data.filter(function (product) {
-            return product.name == values.loanproduct;
+    const handleComplete = async()=>{
+        const finalAmount = Number(totalinterest) + parseInt(loanamount);
+        dispatch(newLoan({
+                fullname:fullname,
+                phonenumber:Number(phonenumber),
+                email:email,
+                idnumber:Number(id),
+                job:values.job,
+                product:loanproduct,
+                amount:Number(loanamount),
+                period:loanperiod,
+                tenature:Number(values.loantenature),
+                front:front,
+                back:back,
+                rate:Number(product2),
+                interest:totalinterest,
+                finalAmount:finalAmount,
+                balance:finalAmount
+        })).then((response)=>{
+               if(response.payload.success){
+                setTimeout(()=>{
+                    navigate('/loans')
+                },3000)
+               }
         })
-        if(values.loanperiod === "Months" ){
-            setTotalInterest( values.loanamount *products[0].interest/100 *values.loantenature)
-            setLoading(false)
-         }else if(values.loanperiod === "Weeks"){
-             setTotalInterest( values.loanamount *products[0].interest/100 *values.loantenature/4) 
-             setLoading(false)   
-         }else if(values.loanperiod === "Days"){
-             setTotalInterest(  values.loanamount *products[0].interest/100 *values.loantenature/30)
-             setLoading(false)
-         }else{
-             setTotalInterest(  values.loanamount *products[0].interest/100 *values.loantenature*12)
-             setLoading(false)    
-         }
-         const finalAmount = Number(totalinterest) + parseInt(values.loanamount)
-        //  {!loading &&  
-        //     dispatch(newLoan({
-        //         fullname:values.fullname,
-        //         phonenumber:Number(values.phonenumber),
-        //         email:values.email,
-        //         idnumber:Number(values.id),
-        //         job:values.job,
-        //         product:values.loanproduct,
-        //         amount:Number(values.loanamount),
-        //         period:values.loanperiod,
-        //         tenature:Number(values.loantenature),
-        //         front:front,
-        //         back:back,
-        //         rate:products[0].interest,
-        //         interest:totalinterest,
-        //         finalAmount:finalAmount,
-        //         balance:finalAmount
-        //     })).then((response)=>{
-        //        if(response.payload.success){
-        //           setTimeout(()=>{
-        //             navigate('/loans')
-        //           },3000)
-        //        }
-        //     })  
-        //  }
-     
-     } catch (error) {
-        console.log(error)
-     }
-   }
+    }
    useEffect(()=>{
     dispatch(getProducts());
    },[])
@@ -177,49 +192,21 @@ const ApplyLoan = ()=>{
     <DashboardWrapper>
         <Toast/>
      <div className=" items-center justify-center py-2 pl-1 pr-3  md:ml-20 lg:ml-5  ">
-        <Formik
-        initialValues={{
-            fullname:'',
-            phonenumber:'',
-            email:'',
-            id:'',
-            job:'',
-            loanproduct:'',
-            loanamount:'',
-            loanperiod:'',
-            loantenature:'',
-        }}
-        validationSchema={validationSchema}
-        onSubmit={handleComplete}>
-        {({
-          values,
-          errors,
-          touched,
-          handleChange,
-          handleBlur,
-          handleSubmit
-         })=>{
-            const{fullname,email,phonenumber,id,job,loanproduct,loanamount,loanperiod,loantenature} = values;
-            return(
-                <>
+  
             {personal &&   <div>
             <p>Personal Information</p>
             <Input
              name='fullname'
              type='text'
              value={fullname}
-             handleChange={handleChange('fullname')}
-             onBlur={handleBlur('fullname')}
-             error={touched.fullname && errors.fullname}
+             handleChange={onChange}
              placeholder='Full Name'
              icon={<MdOutlinePersonPin/>}/>
             <Input
              name='email'
              type='text'
              value={email}
-             handleChange={handleChange('email')}
-             onBlur={handleBlur('email')}
-             error={touched.email && errors.email}
+             handleChange={onChange}
              placeholder='email'
              icon={<TfiEmail/>}
              />
@@ -227,29 +214,22 @@ const ApplyLoan = ()=>{
              name='phonenumber'
              type='text'
              value={phonenumber}
-             handleChange={handleChange('phonenumber')}
-             onBlur={handleBlur('phonenumber')}
-             error={touched.phonenumber && errors.phonenumber}
+             handleChange={onChange}
              placeholder='phonenumber'
              icon={<FcPhone/>}/>
              <Input
              name='id'
              type='text'
              value={id}
-             handleChange={handleChange('id')}
-             onBlur={handleBlur('id')}
-             error={touched.id && errors.id}
+             handleChange={onChange}
              placeholder='ID Number'
              icon={<TiBusinessCard/>}/>
-
             <Input
             name='job'
             type='text'
             value={job}
-            handleChange={handleChange('job')}
-            onBlur={handleBlur('job')}
-            error={touched.job && errors.job}
-             placeholder='Occupation'
+            handleChange={onChange}
+            placeholder='Occupation'
              icon={<FcBriefcase />}
              />
            
@@ -304,9 +284,7 @@ const ApplyLoan = ()=>{
             id="loanproduct"
             name="loanproduct" 
             value={loanproduct}
-            onBlur={handleBlur('loanproduct')}
-            onChange={handleChange('loanproduct')}
-            
+            onChange={onChange}
             className="w-full rounded-md appearance-none relative block w-full  px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
             >
             <option value = ''>Select Loan Product</option>
@@ -315,8 +293,6 @@ const ApplyLoan = ()=>{
 
             })}
             </select> 
-
-            {!loanproduct && touched.loanproduct && <div className="text-center text-red-600 text-sm py-2">loan product is required</div>}
             <div className="flex justify-between space-x-48">
             <div onClick={handleUpload2} className="flex mt-5">
             <FcPrevious className="text-lg "/>
@@ -336,9 +312,7 @@ const ApplyLoan = ()=>{
         name='loanamount'
         type='text'
         value={loanamount}
-        handleChange={handleChange('loanamount')}
-        onBlur={handleBlur('loanamount')}
-        error={touched.loanamount && errors.loanamount}
+        handleChange={onChange}
         placeholder='Amount'
         icon={<GiReceiveMoney/>}/>  
         <div className="flex justify-between space-x-48">
@@ -359,18 +333,15 @@ const ApplyLoan = ()=>{
              name='loantenature'
              type='text'
              value={loantenature}
-             handleChange={handleChange('loantenature')}
-             onBlur={handleBlur('loantenature')}
-             error={touched.loantenature && errors.loantenature}
+             handleChange={onChange}
             placeholder='e.g 3'
             icon={<CgSandClock/>}
             /> 
-              <select
+
+            <select
             value={loanperiod}
-            onChange={handleChange('loanperiod')}
-            onBlur={handleBlur('loanperiod')}
-            name="loanperiod" 
-            id="loanperiod" 
+            name='loanperiod'
+            onChange={handleChangePeriod}
             className="h-14 mt-5  rounded-md appearance-none relative block w-full  px-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm">
              <option value="">Choose period unit</option>
             <option value="Years">Years</option>
@@ -378,8 +349,8 @@ const ApplyLoan = ()=>{
             <option value="Weeks">Weeks</option>
             <option value="Days">Days</option>
             </select> 
+
             </div>
-            {!loanperiod && touched.loanperiod && <div className="text-center text-red-600 text-sm pt-2">Period Unit is required</div>}
               
             <div className="flex justify-between space-x-48">
             <div onClick={handleAmount2} className="flex mt-5">
@@ -418,23 +389,6 @@ const ApplyLoan = ()=>{
               <p className="text-sm font-bold">{" Period"}</p>
                <Details detail={loantenature+loanperiod} icon={<CgSandClock/>}/>
               </div>
-             
-              {/* <div>
-              <p className="text-sm font-bold">{" Interest Rate"}</p>
-                <Details detail='3% p.a' icon={<CiPercent/>}/>
-              </div>
-               <div>
-               <p className="text-sm font-bold">{" Principal"}</p>
-                <Details detail='550' icon={<FcStatistics/>}/>
-               </div> */}
-              {/* <div className="mb-2">
-              <p className="text-sm font-bold">{" Total"}</p>
-                <Details detail='Total' icon={<FcMoneyTransfer/>}/>
-              </div>
-              <div>
-              <p className="text-sm font-bold">{"Due Date"}</p>
-                <Details detail='Due Date' icon={<FcClock/>}/>
-              </div> */}
               
                 </div>
                 <p  className="text-blue-500 font-bold">Uploads</p>
@@ -446,9 +400,6 @@ const ApplyLoan = ()=>{
                 <img src={back} alt='' className="h-full w-full"/>
                </div>
                 </div>
-               
-              
-
             </div> 
             <div className="flex justify-between space-x-46">
             <div onClick={handlePeriod2} className="flex mt-5">
@@ -456,15 +407,12 @@ const ApplyLoan = ()=>{
             <p className="-mt-1">Back</p>
             </div>
             <div  className="flex mt-5">
-            <button type="submit" onClick={handleSubmit} className="bg-green-500 rounded-md hover:bg-black hover:text-white h-10 w-14">Apply</button>
+            <button type="submit" onClick={handleComplete} className="bg-green-500 rounded-md hover:bg-black hover:text-white h-10 w-14">Apply</button>
             </div>
             </div> 
         </div>}
      
-                </>
-            )}}
-       
-        </Formik>
+        
   
         </div>
     </DashboardWrapper>

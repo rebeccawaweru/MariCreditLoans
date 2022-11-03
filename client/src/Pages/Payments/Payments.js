@@ -1,10 +1,11 @@
-import { DashboardWrapper } from "../../Components";
+import { DashboardWrapper,ExportExcel} from "../../Components";
 import { useDispatch,useSelector } from "react-redux";
 import axios from 'axios'
 import client from "../../api/client";
 import { useEffect, useState } from "react";
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
+import { FcPrint } from "react-icons/fc";
 export default function Payments(){
     const dispatch = useDispatch();
     const [data,setData] = useState([])
@@ -25,37 +26,44 @@ export default function Payments(){
         {
           field: 'idnumber',
           headerName: 'ID',
-          width: 150,
+          width: 100,
           editable: true,
         },
         {
            field:'phonenumber',
            headerName:'Phone',
-           width:150,
+           width:100,
            editable:true
         },
         {
           field:'amount',
           headerName:'Amount',
-          width:150,
-          editable:true
+          width:70,
+          editable:true,
+          valueFormatter:({ value }) => value.toLocaleString()
        },
        {
         field:'mode',
         headerName:'Mode',
-        width:150,
+        width:100,
         editable:true
      },
+     {
+      field:'',
+      headerName:'CODE',
+      width:120,
+      editable:true
+   },
         {
           field:'product',
           headerName:'Loan Product',
-          width:150,
+          width:100,
           editable:true
        },
        {
         field:'payday',
         headerName:'Date',
-        width:150,
+        width:110,
         editable:true
      },
         {
@@ -78,8 +86,11 @@ export default function Payments(){
       ];
     return(
         <DashboardWrapper>
-         <p className="text-blue-500 py-2 font-bold ">Payments</p> 
-
+         <p className="text-blue-500 py-2 font-bold ">All Payments</p> 
+         <div className="mb-2 flex space-x-2">
+         <ExportExcel apiData={data} fileName='All Payments' />
+         <FcPrint className="text-3xl" onClick={()=>window.print()}/>
+         </div>
          <Box sx={{ height: 450, width: '100%' }}>  
          <DataGrid
         rows={data}

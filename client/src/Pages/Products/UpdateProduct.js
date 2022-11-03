@@ -23,7 +23,7 @@ export default function UpdateProduct(){
       dispatch(updateProduct({
         name:productName || name,
         interest:Number(rate) || interest,
-        per:p || per,
+        per:'p.m' || per,
         addedBy: fullname,
     })).then((response)=>{
       if(response.payload.success){
@@ -50,7 +50,7 @@ export default function UpdateProduct(){
             className=" h-14 mt-5  rounded-md appearance-none relative block w-full  px-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm">
                 <option value={per}>{per}</option>
              <option value='p.m'>p.m</option>
-             <option value='p.a'>p.a</option>
+             {/* <option value='p.a'>p.a</option> */}
             </select>
             </div>
             <div className='flex justify-between'>
