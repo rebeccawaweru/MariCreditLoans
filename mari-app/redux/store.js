@@ -3,7 +3,7 @@ import userReducer from './userSlice'
 import loanReducer from './loanSlice'
 import productReducer from "./productSlice";
 import paymentReducer from './paymentSlice'
-export default configureStore({
+export const store = configureStore({
     reducer:{
         user:userReducer,
         loan:loanReducer,

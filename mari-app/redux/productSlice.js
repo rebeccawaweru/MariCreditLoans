@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import client from '../api/client'
-import {useNavigate,useParams} from 'react-router-dom'
 import { toast } from "react-toastify";
 export const newProduct = createAsyncThunk('/product/newproducts', async(product, {rejectWithValue})=>{
     try {

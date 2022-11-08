@@ -1,3 +1,4 @@
+// const axios = require('axios')
 const Payment = require('../models/Payment');
 const {StatusCodes} = require ('http-status-codes');
 const {createTransport} = require('nodemailer');
@@ -8,6 +9,106 @@ const transporter = createTransport({
     pass:process.env.GMAIL_PASSWORD
     }
 });
+const passkey = process.env.PASSKEY;
+const shortcode = process.env.SHORTCODE;
+const consumerkey = process.env.CONSUMERKEY;
+const consumersecret = process.env.CONSUMERSECRET;
+
+let date = new Date()
+let time = date.getDate() + "" + "" + date.getMonth() + "" + "" + date.getFullYear() + "" + "" + date.getHours() + "" + "" + date.getMinutes() + "" + "" + date.getSeconds();
+const timestamp = new Buffer.from(time).toString('base64');
+
+// const token = (req,res,next)=>{
+//     const url = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
+//     const auth = 'Basic ' + Buffer.from(consumerkey + ':' + consumersecret).toString('base64');
+//     const headers = {
+//         Authorization: auth,
+//     }
+//     axios.get(
+//     url,{
+//         headers:headers
+//     }).then(response=>{
+//         let data = response.data;
+//         let access_token = data.access_token;
+//         req.token = access_token
+//         console.log(response.data);
+//         return next()
+//     }).catch(error=>console.log(error))
+// }
+
+//middleware to generate token 
+
+const token = async (req,res,next)=>{
+    //in production convert sandbox. to api
+    
+    // const auth = new Buffer.from(`${consumerkey}:${consumersecret}`).toString("base64")
+    // await axios.get('https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials',{
+    //     Headers:{
+    //         authorization: `Basic  ${auth}`,
+    //     },
+    
+    // }).then((response)=>{
+    //     res.status(200).json(data)
+    //     console.log(response.data.access_token)
+    //     token = response.data.access_token
+    //     next() 
+    // }).catch(err=>{
+    //     res.status(400).json(err)
+    //     console.log(err)
+    // })
+}
+
+const stkPush = (req,res)=>{
+// const token = req.token;
+// const headers = `Bearer ${token}`;
+// // const password = new Buffer.from(shortcode + passkey + timestamp).toString("base64")
+// //in production convert sandbox. to api
+// axios.post('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',{  
+    
+//     BusinessShortCode:"174379",    
+//     Password: "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMTYwMjE2MTY1NjI3",    
+//     Timestamp:timestamp,    
+//     TransactionType: "CustomerPayBillOnline",    
+//     Amount:"1",    
+//     PartyA:"254702742458",    
+//     PartyB:"174379",    
+//     PhoneNumber:"254702742458",    
+//     CallBackURL:"https://mydomain.com/pat",    
+//     AccountReference:"Test",    
+//     TransactionDesc:"Test"  
+// },{
+//     headers:{
+//         Authorization: `Bearer ${token}`
+//     }
+// }).then((response)=>{
+//     console.log(response);
+//     res.status(200).json(response)
+// }).catch(error=>{
+//     console.log(error.message);
+//     res.status(400).json(error.message)
+
+// });
+// const stkURL = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
+// let password = new Buffer.from(`${shortcode}${passkey}${timestamp}`).toString('base64');
+// let data = {
+//     BusinessShortCode:"174379",    
+//     Password:"MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMTYwMjE2MTY1NjI3",    
+//     Timestamp:timestamp,    
+//     TransactionType:"CustomerPayBillOnline",    
+//     Amount:"1",    
+//     PartyA:"254702742458",    
+//     PartyB:"174379",    
+//     PhoneNumber:"254702742458",    
+//     CallBackURL:"https://maricredit.herokuapp.com/cbk",    
+//     AccountReference:"MariCredit",    
+//     TransactionDesc:"lipa na Mpesa"    
+//     }
+//     axios.post(stkURL, data, { headers: {Authorization: headers}}).then(response=>res.send(response.data));
+}
+const cbk = async(req,res)=>{
+    var payload = await req.body;
+    res.status(200).send(payload)
+}
 
 const newpayment = async(req,res)=>{
    const {loanid,name,idnumber,phonenumber,amount,mode,product,addedBy} = req.body;
@@ -126,6 +227,9 @@ const deletepayment = async(req,res)=>{
 
 
 module.exports = {
+token,
+stkPush,
+cbk,
 newpayment,
 getpayments,
 getpayment,

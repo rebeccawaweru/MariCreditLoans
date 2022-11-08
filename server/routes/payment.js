@@ -7,11 +7,16 @@ getpayment,
 updatepayment,
 deletepayment,
 getloanPay,
-confirmpayment
+confirmpayment,
+token,
+stkPush,
+cbk
 } = require('../controllers/payment')
 
 router.route('/payment').post(newpayment).get(getpayments)
 router.route('/loanpay').post(getloanPay)
 router.route('/payment/:id').get(getpayment).patch(updatepayment).delete(deletepayment);
-router.route('/confirmpayment').post(confirmpayment)
+router.route('/confirmpayment').post(confirmpayment);
+// router.post('/mpesa', token, stkPush)
+// router.get('/cbk',cbk);
 module.exports = router

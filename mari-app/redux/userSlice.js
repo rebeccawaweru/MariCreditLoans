@@ -1,7 +1,6 @@
 import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
 import client from "../api/client";
 
-
 export const updateUser2 = createAsyncThunk('users/update',async (user, {rejectWithValue})=>{
     try { 
         const response = await client.post('login',
@@ -120,11 +119,17 @@ export const userSlice = createSlice({
         state.error = false;
       },
       [signup.fulfilled]:(state,action)=>{
+        toast.show('Signup successful')
         state.pending = false;
         state.error = false;
         state.msg = action.payload
       },
       [signup.rejected]:(state,action)=>{
+        if(action.payload === 'Network Error' || action.payload === "Request failed with status code 500" ){
+          toast.error('Please check your internet connection and try again') 
+          }else if (action.payload === "Request failed with status code 400"){
+          toast.error('Email  already exists') 
+        }
         state.pending = false;
         state.error = true;
         state.msg = action.payload
