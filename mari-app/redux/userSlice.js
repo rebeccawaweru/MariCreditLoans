@@ -1,11 +1,12 @@
 import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
 import client from "../api/client";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export const updateUser2 = createAsyncThunk('users/update',async (user, {rejectWithValue})=>{
     try { 
         const response = await client.post('login',
         user);
-        localStorage.setItem('user', response.data);
+      
+        await AsyncStorage.setItem('user', response.data);
         return response.data;
     } catch (error) {
       // return rejectWithValue(error.response.data)  
@@ -34,7 +35,7 @@ try {
 export const confirmpassword = createAsyncThunk('/users/confirmpassword', async(user, {rejectWithValue})=>{
   try {
     const response = await client.post('confirmpassword',user);
-    localStorage.setItem('email', response.data.user.email);
+    AsyncStorage.setItem('email', response.data.user.email);
     return response.data;
   } catch (error) {
     return rejectWithValue(error.message)
@@ -53,7 +54,7 @@ export const newpassword = createAsyncThunk('/users/newpassword', async(user,{re
 
 export const getUser = createAsyncThunk('users/getUser',async(user,{rejectWithValue})=>{
   try {
-    const id = localStorage.getItem('user')
+    const id = await AsyncStorage.getItem('user')
     const response = await client.get('user/'+id);
     return response.data.user;
   } catch (error) {
@@ -93,7 +94,7 @@ export const userSlice = createSlice({
    logout:(state)=>{
     state.isLoggedin = false;
     state.userInfo = {};
-    localStorage.removeItem('user')
+    AsyncStorage.removeItem('user')
    }
   },
   extraReducers:{
@@ -143,11 +144,13 @@ export const userSlice = createSlice({
         state.error = false;
         state.userInfo = action.payload;
         state.isLoggedin = true;
+  
       },
       [getUser.rejected]:(state,action)=>{
         state.pending = false;
         state.error = true;
         state.msg = action.payload;
+      
       },
       [getUsers.pending]:(state)=>{
         state.pending = true;
@@ -195,7 +198,7 @@ export const userSlice = createSlice({
         state.error = false
        },
        [newpassword.fulfilled]:(state,action)=>{
-          localStorage.removeItem('email');
+        AsyncStorage.removeItem('email');
          state.pending = false;
          state.error = false;
          state.msg = action.payload;

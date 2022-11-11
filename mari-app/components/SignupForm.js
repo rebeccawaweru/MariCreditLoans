@@ -6,7 +6,7 @@ import {Formik} from 'formik'
 import * as  Yup from 'yup'
 import {useDispatch} from 'react-redux';
 import { signup } from '../redux/userSlice';
-import { useToast } from "react-native-toast-notifications";
+import Swal from "sweetalert2";
 
 const regx = /^\d{10}$/;
 const validationSchema = Yup.object({
@@ -31,7 +31,12 @@ const signUp = async(values,formikActions)=>{
   try {
     await dispatch(signup({...values})).then((res)=>{
       if(res.payload.success){
-       toast.success('success')
+        Swal.fire({
+          title: "Success",
+          text: "Signup successful",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
       } 
     })
   

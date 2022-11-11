@@ -17,7 +17,7 @@ export default function Home({navigation}){
     style={styles.background}
     source={require('../assets/bg1.jpg')}>
          <View style={{flexDirection:"row"}}>
-             <TouchableOpacity style={styles.btn} onPress={handleApply}>
+             <TouchableOpacity style={styles.btn} onPress={()=>navigation.navigate('Apply')}>
                  <Text style={styles.title}>Apply for a loan</Text>
              </TouchableOpacity>
              <TouchableOpacity style={[styles.btn, {marginLeft:20}]} onPress={handleMyloans}>

@@ -6,6 +6,7 @@ import {Formik} from 'formik'
 import * as  Yup from 'yup'
 import {useDispatch,useSelector} from 'react-redux';
 import { updateUser2 } from '../redux/userSlice';
+import { ScrollView } from 'react-native';
 const validationSchema = Yup.object({
   email: Yup.string().email('Invalid email!').required('Email  is required'),
   password:Yup.string().trim().min(6,'password must have 6 or more characters').required('Password is required')
@@ -20,7 +21,7 @@ const login = async(values,formikActions)=>{
   try {
   await dispatch(updateUser2({...values})).then((res)=>{
     if(res.payload){
-      console.log(res.payload)
+      navigation.navigate("Dashboard")
     }
   })
   } catch (error) {
@@ -30,6 +31,7 @@ const login = async(values,formikActions)=>{
   formikActions.setSubmitting(false)
 }
     return (
+      <ScrollView>
       <FormContainer>
        <Formik
          initialValues={userInfo} 
@@ -73,6 +75,7 @@ const login = async(values,formikActions)=>{
          )}}
        </Formik>
     </FormContainer>
+    </ScrollView>
     );
 }
 

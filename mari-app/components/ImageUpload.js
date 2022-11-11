@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { TouchableOpacity, View,StyleSheet,Text,Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import client from '../api/client';
 
-const ImageUpload = ()=> {
-    const user = localStorage.getItem('id')
+
+const ImageUpload = ({onChange,title,ID})=> {
+   
     const [profileImage, setProfileImage] = useState('')
      const [img, setImg] = useState('');
 
@@ -42,28 +42,28 @@ const ImageUpload = ()=> {
          setImg(File.url)
          console.log(File.secure_url)
 
-         try {
-             const res = await client.put(`/auth/${user}`,{
-                  avatar:File.secure_url
-            })
-            console.log(res.data)
+        //  try {
+        //      const res = await client.put(`/auth/${user}`,{
+        //           avatar:File.secure_url
+        //     })
+        //     console.log(res.data)
           
-         } catch (error) {
-             console.log(error.message)
-         }
+        //  } catch (error) {
+        //      console.log(error.message)
+        //  }
        
     
 
     }
     return (
         <>
-        <View style={styles.container}>
-            <View>
-                <TouchableOpacity onPress={openImageLibrary} style={styles.uploadBtn}>
-                {profileImage ? <Image source={{uri:profileImage}} style={{width:"100%", height:"100%"}} />: <Text style={styles.uploadBtnText}>Upload Image</Text> }
+ 
+            <View style={styles.container}>
+                <TouchableOpacity onPress={onChange} style={styles.uploadBtn}>
+                {ID ? <Image source={{uri:ID}} style={{width:"100%", height:"100%"}} />: <Text style={styles.uploadBtnText}>{title}</Text> }
                 </TouchableOpacity>
-                <Text style={styles.skip}>Skip</Text>
-                {profileImage ? <Text
+                {/* <Text style={styles.skip}>Skip</Text> */}
+                {/* {profileImage ? <Text
                 onPress={uploadProfileImage}
                  style={[
                 styles.skip,
@@ -71,10 +71,10 @@ const ImageUpload = ()=> {
                  borderRadius:8 },
                 ]}
                 >Upload
-                </Text> : null}
+                </Text> : null} */}
            
             </View>
-        </View>
+       
         </>
         
     );
@@ -87,9 +87,9 @@ const styles = StyleSheet.create({
       backgroundColor: '#fff',
     },
     uploadBtn:{
-        height:125,
-        width:125,  
-        borderRadius:125/2,
+        height:120,
+        width:120,  
+        // borderRadius:125/2,
         justifyContent:'center',
         alignItems:'center',
         backgroundColor:"white",

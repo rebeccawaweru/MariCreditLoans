@@ -1,5 +1,4 @@
 import React, { useRef} from 'react';
-import { LinearGradient } from 'expo-linear-gradient';
 import {
 View,
 StyleSheet,
@@ -14,7 +13,7 @@ import FormHeader from '../../components/FormHeader';
 import FormSelectorButton from '../../components/FormSelectorButton';
 import LoginForm from '../../components/LoginForm';
 import SignupForm from '../../components/SignupForm';
-import Toast from '../../components/Toast';
+
 const {width} = Dimensions.get('window')
 function LoginScreen({navigation}) {
     const animation= useRef(new Animated.Value(0)).current;
@@ -44,12 +43,9 @@ function LoginScreen({navigation}) {
     return (
   <ImageBackground
    style={styles.container}
-    source={require('../../assets/bg1.jpg')}
+    source={require('../../assets/b4.jpg')}
     >
-    <LinearGradient
-     colors={['rgba(0,0,0,0.8)','rgba(0,0,0,0.2)' ]}
-    style={{flex: 1, justifyContent: 'center'}}>
-         <View style={{flex:1, paddingTop:20}}>
+         <View style={{flex:1, paddingTop:50}}>
          <Image source={require('../../assets/logo2.png')} style={{height:160,width:250,alignSelf:'center'}}/>
            <View style={{height:80}}>
            <FormHeader
@@ -61,7 +57,7 @@ function LoginScreen({navigation}) {
             rightHeaderTranslateY={rightHeaderTranslateY}
            />
            </View>
-           <Toast/>
+       
            <View style={{flexDirection:"row", paddingHorizontal:20, marginBottom:20}}>
                <FormSelectorButton
                 backgroundColor={loginColorInterpolate} 
@@ -87,8 +83,6 @@ function LoginScreen({navigation}) {
         </ScrollView>
       </ScrollView>
        </View>
-       </LinearGradient>
-   
        </ImageBackground>
        
       

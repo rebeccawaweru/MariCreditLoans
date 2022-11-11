@@ -1,57 +1,46 @@
-import React,{useEffect, useState} from 'react';
+import React,{useEffect} from 'react';
 import {View,Text,Image,TouchableOpacity} from 'react-native'
 import {createDrawerNavigator, DrawerContentScrollView,DrawerItemList} from '@react-navigation/drawer';
-import {NavigationContainer} from '@react-navigation/native';
-import client from '../api/client';
 import Home from './Home';
 import ProfilePage from './ProfilePage';
-import LoginScreen from '../screens/LoginScreen';
+import tw from 'tailwind-react-native-classnames';
+import { Icon } from 'react-native-elements'
+import { useSelector,useDispatch } from 'react-redux';
+import { getUser,logout } from '../redux/userSlice';
 
-
-function Loans(){
-    return(
-        <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
-            <Text>Tasks</Text>
-        </View>
-    )
-}
 const Drawer= createDrawerNavigator();
 const CustomDrawer = (props, {navigation})=>{
-    const [fullname,setfullName] = useState('');
-    const [avatar,setAvatar] = useState('');
-    const [email,setEmail] = useState('')
-    const id = localStorage.getItem('id')
+    const dispatch = useDispatch();
+    const {fullname} = useSelector(state=>state.user.userInfo)
     useEffect(()=>{
-        client.get('/auth/'+id)
-        .then((response)=>{
-         setfullName(response.data.user.fullname);
-         setAvatar(response.data.user.avatar)
-         setEmail(response.data.user.email)
-      })   
+     
+      dispatch(getUser()) 
+      
     })
-    const handleLogout = ({navigation}) =>{
-        localStorage.removeItem('id');
-        localStorage.removeItem('phone')
-        navigation.navigate("LoginScreen")
+    const handleLogout = () =>{
+      dispatch(logout())
+        props.navigation.navigate("Login")
     }
-
   return(
     <View style={{flex:1}}>
     <DrawerContentScrollView {...props}>
-      <View style={{
-      flexDirection:"row", 
-      justifyContent:"space-between", 
-      alignItems:"center",
-      backgroundColor:"whitesmoke",
-      padding:20,
-      marginBottom:20
-      }}>
-     <View>
-        <Text>{fullname}</Text>
-        <Text>{email}</Text>
+   <View style={[tw`flex flex-row justify-between mb-5 bg-gray-100 `]}>
+    <View style={[tw`flex-row justify-center`]}>
+    <Image source={require('../assets/logo2.png')} style={{height:90,width:90}}/>
+        <Text style={[tw`pt-8 pb-5  text-center`]}>Welcome, {fullname}</Text>
+        
     </View>
-    <Image source={avatar} style={{width:60, height:60, borderRadius:30}}/>
-    </View>
+ 
+     
+    <Icon
+        name='close-outline'
+        type='ionicon'
+        color='#517fa4'
+        
+        onPress={props.navigation.closeDrawer}
+      />
+       </View>
+   
       <DrawerItemList {...props} />
      </DrawerContentScrollView> 
      <TouchableOpacity style={{
@@ -70,6 +59,8 @@ const CustomDrawer = (props, {navigation})=>{
 const DrawerNavigator = ()=>{
     return (
     <Drawer.Navigator
+    useLegacyImplementation={true}
+    defaultStatus="closed"
     screenOptions={{
         headerShown:"true",
         headerStyle:{
@@ -92,8 +83,7 @@ const DrawerNavigator = ()=>{
 }
 export default function Dashboard({navigation}){
     return (
-     
-            <DrawerNavigator/>
+     <DrawerNavigator/>
    
     )
 }

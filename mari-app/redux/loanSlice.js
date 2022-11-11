@@ -71,15 +71,15 @@ export const loanSlice = createSlice({
         state.error = false;
       },
       [newLoan.fulfilled]:(state)=>{
-        toast.success('Loan created successfully')
+        // toast.success('Loan created successfully')
         state.pending = false;
         state.success = true;
         state.error = false;
       },
       [newLoan.rejected]:(state,action)=>{
-        if(action.payload === 'Network Error'){
-          toast.error('Please check your internet and try again')
-        }
+        // if(action.payload === 'Network Error'){
+        //   toast.error('Please check your internet and try again')
+        // }
         state.pending = false;
         state.error = true;
         state.success = false

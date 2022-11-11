@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {View,StyleSheet,Dimensions,Text,TextInput,Picker, KeyboardAvoidingView,Platform,Alert} from 'react-native'
+import {View,StyleSheet,Dimensions,Text,TextInput, KeyboardAvoidingView,Platform,Alert} from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import FormContainer from './FormContainer';
 import FormInput from './FormInput';
 import FormSubmitButton from './FormSubmitButton';
@@ -80,7 +81,9 @@ const handleSubmit = async ()=>{
 }
 return(
     <>
+    <FormContainer>
 <View style={{flex:1 , backgroundColor:"#fff", padding:10}}>
+    
 <ScrollView>
       <Text style={{paddingTop:30}}>Fill in the required information.</Text>
       <Text style={{fontWeight:"bold", paddingTop:5}}>Choose loan product</Text>
@@ -140,7 +143,7 @@ onChangeText={value => handleOnChangeText(value,'emergency2')}/>
 <FormSubmitButton title='Submit' onPress={handleSubmit} />
 </ScrollView>
 </View>
-
+</FormContainer>
 </>
 )
 }

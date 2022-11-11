@@ -11,7 +11,7 @@ function WelcomeScreen({navigation}) {
   <LinearGradient
       colors={['rgba(0,0,0,0.6)','rgba(0,0,0,0.7)' ]}
       style={{flex: 1, justifyContent: 'center'}}>
-           <Image source={require('../../assets/logo2.png')} style={{height:160,width:250,alignSelf:'center'}}/>
+           {/* <Image source={require('../../assets/logo2.png')} style={{height:160,width:250,alignSelf:'center'}}/> */}
     </LinearGradient>
            </ImageBackground>
     <View style={styles.title}>
@@ -20,7 +20,7 @@ function WelcomeScreen({navigation}) {
     </View>
     <View 
     style={styles.loginButton}>
-    <TouchableHighlight style={styles.loginButton} onPress={()=>navigation.navigate('LoginScreen')}>
+    <TouchableHighlight style={styles.loginButton} onPress={()=>navigation.navigate('Login')}>
     <Text style={styles.start}>GET STARTED</Text>
     </TouchableHighlight>
     </View>
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
         color:"white",
         fontWeight:"bold",
         fontSize: 30,
-        fontFamily:"Lucida Handwriting"
+    
       
     },
     start:{
