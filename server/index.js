@@ -12,7 +12,9 @@ const paymentRouter = require('./routes/payment');
 
 app.use(cors());
 app.use(bodyParser.json());
+
 app.use(express.json());
+app.use(express.urlencoded({  extended:false   }));
 app.use('/',userRouter);
 app.use('/',productRouter);
 app.use('/',loanRouter);

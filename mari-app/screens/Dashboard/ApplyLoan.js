@@ -12,8 +12,6 @@ import { getProducts } from '../../redux/productSlice';
 import { getUser } from '../../redux/userSlice';
 import { newLoan } from '../../redux/loanSlice';
 import {useDispatch,useSelector} from 'react-redux';
-// import Swal from "sweetalert2";
-import AwesomeAlert from 'react-native-awesome-alerts';
 import { Alert } from 'react-native';
 function ApplyLoan({navigation}) {
     const dispatch = useDispatch()
@@ -217,10 +215,10 @@ function ApplyLoan({navigation}) {
         value={amount}
         onChangeText={value => handleOnChangeText(value,'amount')}/>
         <Text style={[tw `font-bold text-sm`]}>Loan Period</Text>
-        <View style={[tw`flex-row w-full `]}>
+        <View style={[tw `flex-row w-full `]}>
         <FormInput 
-         width='50%'
-        label=''
+        //  width='50%'
+     
         value={tenature}
         onChangeText={value => handleOnChangeText(value,'tenature')}
         placeholder='e.g 3'/>
@@ -254,7 +252,7 @@ function ApplyLoan({navigation}) {
     />
     <Text>{fullname}</Text>
     </View>
-    <View style={[tw`flex flex-row`]}>
+    <View style={[tw `flex flex-row`]}>
     <Icon
     name='envelope'
     type='font-awesome'
@@ -274,7 +272,7 @@ function ApplyLoan({navigation}) {
      />
     <Text>{phonenumber}</Text>
     </View>
-    <View style={[tw`flex flex-row`]}>
+    <View style={[tw `flex flex-row`]}>
     <Icon
     name='id-badge'
     type='font-awesome'
@@ -282,7 +280,7 @@ function ApplyLoan({navigation}) {
      />
      <Text>{idnumber}</Text>
     </View>
-    <View style={[tw`flex flex-row`]}>
+    <View style={[tw `flex flex-row`]}>
     <Icon
     name='briefcase-outline'
     type='ionicon'
@@ -293,11 +291,11 @@ function ApplyLoan({navigation}) {
     </View>
 
     <Text style={[tw `font-bold text-sm mb-2 mt-2`]}>Product Information</Text>
-    <View style={[tw`flex flex-row justify-around mt-2`]}>
+    <View style={[tw `flex flex-row justify-around mt-2`]}>
 
     <View>
     <Text>Loan Product</Text>
-    <View style={[tw`flex flex-row mt-2`]}>
+    <View style={[tw `flex flex-row mt-2`]}>
     <Icon
     name='cube-outline'
     type='ionicon'
@@ -309,7 +307,7 @@ function ApplyLoan({navigation}) {
 
     <View>
     <Text>Principal</Text>
-    <View style={[tw`flex flex-row mt-2`]}>
+    <View style={[tw `flex flex-row mt-2`]}>
     <Icon
     name='money'
     type='font-awesome'
@@ -321,7 +319,7 @@ function ApplyLoan({navigation}) {
 
     <View>
     <Text>Period</Text>
-    <View style={[tw`flex flex-row mt-2`]}>
+    <View style={[tw `flex flex-row mt-2`]}>
     <Icon
     name='hourglass-outline'
     type='ionicon'
@@ -333,12 +331,12 @@ function ApplyLoan({navigation}) {
    </View>
 
    <Text style={[tw `font-bold text-sm mb-2 mt-2`]}>Uploads</Text>
-    <View style={[tw`flex-row justify-around`]}>
+    <View style={[tw `flex-row justify-around`]}>
      {front ? <Image source={{uri:front}} style={[tw`h-52 w-52 mx-1`]}/>: <Text>No Front ID to display</Text>}
      {back ? <Image source={{uri:back}} style={[tw`h-52 w-52`]}/>: <Text>No Back ID to display</Text>}
     </View>
     </View>
-    <View style={[tw`flex-row justify-between mt-2`]}>
+    <View style={[tw `flex-row justify-between mt-2`]}>
     <Icon
     reverse
     name='arrow-back'

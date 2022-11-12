@@ -7,7 +7,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
 WelcomeScreen,
 LoginScreen,
-ApplyLoan
+ApplyLoan,
+MyLoans
 } from './screens';
 import Dashboard from './components/Dashboard'
 export default function App() {
@@ -43,6 +44,13 @@ export default function App() {
         title:'Apply for a loan',
        
        }}
+      />
+      <Stack.Screen 
+      name='MyLoans' 
+      component={MyLoans} 
+      options={{
+        title:'My Loans'
+      }}
       />
       </Stack.Navigator>
   </NavigationContainer>

@@ -15,6 +15,6 @@ router.route('/loan/:id').get(getloan).patch(updateloan).delete(deleteloan);
 
 
 
-router.get('/myloans/:user', myloans)
+router.post('/myloans/:email', myloans)
 router.get('/requests/:request', loanrequest)
 module.exports = router

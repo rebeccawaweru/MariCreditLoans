@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import client from '../api/client'
 import { toast } from "react-toastify";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export const newLoan = createAsyncThunk('/loan/newloans', async(loan, {rejectWithValue})=>{
     try {
       const response = await client.post('loan',loan);
@@ -46,6 +47,17 @@ export const deleteLoan = createAsyncThunk('/loan/deleteloan', async(loan, {reje
     } catch (error) {
         return rejectWithValue(error.message)
     }
+})
+
+export const myloans = createAsyncThunk('/loan/myloan', async(loan, {rejectWithValue})=>{
+  try {
+    const email = await AsyncStorage.getItem('email');
+    console.log(email);
+    const response = await client.post(`myloans/${email}`)
+    return response.data.loan
+  } catch (error) {
+    return rejectWithValue(error.message)
+  }
 })
 
 export const loanSlice = createSlice({
@@ -156,7 +168,23 @@ export const loanSlice = createSlice({
         state.success = false
         state.msg = action.payload
       },
-      
+      [myloans.pending]:(state)=>{
+        state.pending = true;
+        state.error = false;
+        state.success = false;
+      },
+      [myloans.success]:(state,action)=>{
+        state.pending = false;
+        state.error = false;
+        state.success = true;
+        state.data = action.payload;
+      },
+      [myloans.rejected]:(state,action)=>{
+        state.pending = false;
+        state.error = true;
+        state.success = false;
+        state.msg = action.payload;
+      }
       
     }
 })

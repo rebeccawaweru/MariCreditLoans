@@ -28,8 +28,8 @@ const loanrequest = async(req,res)=>{
 }
 const myloans = async(req,res)=>{
     try {
-        const {user:userId} = req.params;
-        const loan = await Loan.find({idnumber:userId})
+        const {email:email} = req.params;
+        const loan = await Loan.find({"email":email});
         if(!loan){
            res.status(StatusCodes.NOT_FOUND).json({message:'You do not have any loans'})
         }
