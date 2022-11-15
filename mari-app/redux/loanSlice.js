@@ -21,7 +21,7 @@ export const getLoans = createAsyncThunk('/loan/getloans', async(loan, {rejectWi
 
 export const getLoan = createAsyncThunk('/loan/getloan', async(loan, {rejectWithValue})=>{
     try {
-      const id = localStorage.getItem('loan')
+      const id = await AsyncStorage.getItem('loan')
       const response = await client.get('loan/'+id);
       return response.data.loan     
     } catch (error) {
@@ -31,7 +31,7 @@ export const getLoan = createAsyncThunk('/loan/getloan', async(loan, {rejectWith
 
 export const updateLoan = createAsyncThunk('/loan/updateloan', async(loan, {rejectWithValue})=>{
     try {
-      const id = localStorage.getItem('loan')
+      const id = await AsyncStorage.getItem('loan')
       const response = await client.patch('loan/'+id, loan);
       return response.data;
     } catch (error) {
@@ -41,7 +41,7 @@ export const updateLoan = createAsyncThunk('/loan/updateloan', async(loan, {reje
 
 export const deleteLoan = createAsyncThunk('/loan/deleteloan', async(loan, {rejectWithValue})=>{
     try {
-      const id = localStorage.getItem('loan')
+      const id = await AsyncStorage.getItem('loan')
       const response = await client.delete('loan/'+id);
       return response.data
     } catch (error) {
@@ -52,7 +52,6 @@ export const deleteLoan = createAsyncThunk('/loan/deleteloan', async(loan, {reje
 export const myloans = createAsyncThunk('/loan/myloan', async(loan, {rejectWithValue})=>{
   try {
     const email = await AsyncStorage.getItem('email');
-    console.log(email);
     const response = await client.post(`myloans/${email}`)
     return response.data.loan
   } catch (error) {
@@ -157,7 +156,7 @@ export const loanSlice = createSlice({
         state.error = false;
       },
       [deleteLoan.fulfilled]:(state)=>{
-        toast.warning('Loan deleted successfully')
+        AsyncStorage.removeItem('loan')
         state.pending = false;
         state.success = true;
         state.error = false;

@@ -1,7 +1,7 @@
 import React,{useEffect, useState} from 'react';
-import { StyleSheet, View,ScrollView } from 'react-native';
+import { StyleSheet, View,ScrollView, Alert } from 'react-native';
 import {useDispatch,useSelector} from 'react-redux';
-import { myloans } from '../../redux/loanSlice';
+import { myloans,getLoan } from '../../redux/loanSlice';
 import { getUser } from '../../redux/userSlice';
 import tw from 'tailwind-react-native-classnames';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,18 +12,22 @@ import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-ta
 function MyLoans({navigation}) {
     const dispatch = useDispatch()
     const {email} = useSelector(state=>state.user.userInfo);
+  
     const [data,setData]= useState([])
     async function findLoan(){
         await AsyncStorage.setItem('email',email).then(()=>{
           dispatch(myloans()).then((res)=>{
             setData(res.payload)
-            console.log(res.payload)
+       
           })
         })
     }
-    const handleView = (id)=>{
-      console.log(id)
+    const handleView = async (id)=>{
+     await AsyncStorage.setItem('loan', id);
+     navigation.navigate('ViewLoan')
+     
     }
+
     useEffect(()=>{
        dispatch(getUser()).then(()=>{
         findLoan()
@@ -38,6 +42,7 @@ function MyLoans({navigation}) {
         <DataTable.Title>Product</DataTable.Title>
         <DataTable.Title>Principal</DataTable.Title>
         <DataTable.Title>Status</DataTable.Title>
+        <DataTable.Title>Action</DataTable.Title>
       </DataTable.Header>
         {data.map((info)=>{
         return <DataTable.Row key={info._id}>

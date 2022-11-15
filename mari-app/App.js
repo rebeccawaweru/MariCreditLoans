@@ -8,7 +8,8 @@ import {
 WelcomeScreen,
 LoginScreen,
 ApplyLoan,
-MyLoans
+MyLoans,
+ViewLoan
 } from './screens';
 import Dashboard from './components/Dashboard'
 export default function App() {
@@ -52,6 +53,14 @@ export default function App() {
         title:'My Loans'
       }}
       />
+      <Stack.Screen 
+      name='ViewLoan' 
+      component={ViewLoan} 
+      options={{
+        title:'Loan Information'
+      }}
+      />
+
       </Stack.Navigator>
   </NavigationContainer>
   </Provider>
