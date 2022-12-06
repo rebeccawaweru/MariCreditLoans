@@ -6,11 +6,16 @@ import { DashboardWrapper,CustomModal, Toast,ExportExcel } from '../../Component
 import { useDispatch,useSelector } from 'react-redux';
 import { deleteLoan,getLoans } from '../../redux/loanSlice';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'
 export default function Loans() {
   const dispatch = useDispatch();
   const navigate = useNavigate()
   const [open,setOpen] = useState(false)
   const {data} = useSelector(state=>state.loan)
+  const [intDate, setintDate] = useState('')
+  const [reducingBalance,setreducingBalance] = useState(0)
+        const date = new Date().toISOString().slice(0, 10);
+  const day = 24 * 60 * 60 * 1000;
 
   const handleView = (id)=>{
     localStorage.setItem('loan', id);
@@ -34,7 +39,8 @@ export default function Loans() {
      setOpen(false)
   }
    useEffect(()=>{
-    dispatch(getLoans())
+    dispatch(getLoans());
+   
    },[data])
    const columns = [
     { field: 'fullname', 
@@ -100,11 +106,15 @@ export default function Loans() {
       valueFormatter:({ value }) => value.toLocaleString()
     },
     {
-      field: 'balance',
-      headerName: 'R.Balance',
-      width: 140,
-      editable: true,
-      valueFormatter:({ value }) => value.toLocaleString()
+      field: 'R.Balance',
+      valueGetter: function(params) {
+        if(params.row.initiation === "-"){
+          return Math.round(params.row.balance).toLocaleString()
+        }else {
+          return Math.round(params.row.balance * (1/30*params.row.rate/100) * ((new Date(date.replace(/-/g, "/")).getTime() - new Date(params.row.initiation.replace(/-/g, "/")).getTime())/day) + params.row.balance ).toLocaleString()
+        }
+      }
+      // valueGetter: (params) => (params.row.balance * (1/30*params.row.rate/100) * ((new Date(date.replace(/-/g, "/")).getTime() - new Date(params.row.initiation.replace(/-/g, "/")).getTime())/day) + params.row.balance ),
     },
     {
       field: 'initiation',

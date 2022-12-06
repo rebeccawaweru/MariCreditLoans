@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 export default function UpdateLoan(){
     const {data} = useSelector(state=>state.product)
-    const {fullname,email,phonenumber,idnumber,job,product,amount,tenature,period,request,front,back,rate,interest,finalAmount} = useSelector(state=>state.loan.loanInfo)
+    const {fullname,email,phonenumber,idnumber,job,product,amount,tenature,period,request,front,back,rate,interest,finalAmount,initiation,due} = useSelector(state=>state.loan.loanInfo)
     const [userFront,setuserFront] = useState('')
     const [userBack,setuserBack] = useState('')
     const navigate = useNavigate()
@@ -77,6 +77,7 @@ export default function UpdateLoan(){
         setuserBack(File.url)
     }
     const handleSubmit =async()=>{
+        var date = new Date();
         setA(values.useramount || amount) ;
         const b =  values.useramount || amount
         const p = values.userproduct || product
@@ -89,19 +90,47 @@ export default function UpdateLoan(){
             setTotalInterest(parseInt(b)*products[0].interest/100*t)    
              setDays(t*30)
              setLoading(false)
+             date.setDate(date.getDate() + t*30);
+             let date2 = new Date(date),
+             mnth = ("0" + (date2.getMonth() + 1)).slice(-2),
+             day = ("0" + date2.getDate()).slice(-2);
+             setdueDate([date.getFullYear(), mnth, day].join("-")) 
          }else if(n  === "Weeks"){
             setTotalInterest(parseInt(b)*products[0].interest/100 *t/4)  
             setDays(t*7)     
             setLoading(false) 
+            date.setDate(date.getDate() + t*7);
+            let date2 = new Date(date),
+            mnth = ("0" + (date2.getMonth() + 1)).slice(-2),
+            day = ("0" + date2.getDate()).slice(-2);
+            setdueDate([date.getFullYear(), mnth, day].join("-")) 
          }else if(n  === "Days"){
             setTotalInterest(parseInt(b)*products[0].interest/100 *t/30)
             setDays(t*1)  
             setLoading(false)  
+            date.setDate(date.getDate() + t*1);
+            let date2 = new Date(date),
+            mnth = ("0" + (date2.getMonth() + 1)).slice(-2),
+            day = ("0" + date2.getDate()).slice(-2);
+            setdueDate([date.getFullYear(), mnth, day].join("-")) 
          }else if(n  === "Years"){
              setTotalInterest(parseInt(b)*products[0].interest/100*t*12) 
              setDays(t*365)   
              setLoading(false)    
+             date.setDate(date.getDate() + t*365);
+             let date2 = new Date(date),
+             mnth = ("0" + (date2.getMonth() + 1)).slice(-2),
+             day = ("0" + date2.getDate()).slice(-2);
+             setdueDate([date.getFullYear(), mnth, day].join("-")) 
         }
+
+        if(userequest === "Approved"){
+            const d = new Date().toISOString().slice(0, 10)
+            setinitialDate(d) 
+          }else if(userequest === "Rejected" || userequest === "Pending"){
+              setinitialDate("-")
+              setdueDate("-")
+          }
         setPr(products[0].interest)
         setOpen(true)   
            
@@ -121,17 +150,18 @@ export default function UpdateLoan(){
              rate:pr || rate,
              interest:totalinterest || interest,
              finalAmount:userfinalAmount,
-             balance:userfinalAmount || finalAmount,
+             balance:Number(useramount) || amount,
              amount:Number(useramount) || amount,
              tenature:Number(usertenature) || tenature,
              period:userperiod || period,
              request:userequest || request,
              front:userFront || front,
              back:userBack || back ,
-             due:duedate,
-             initiation:initialdate
+             due:duedate || due,
+             initiation:initialdate || initiation
            })).then((response)=>{
                if(response.payload.success){
+                
                    setTimeout(()=>{
                       navigate('/loans')
                    },2000)
@@ -141,29 +171,29 @@ export default function UpdateLoan(){
     useEffect(()=>{
         dispatch(getLoan());
         dispatch(getProducts());
-        if(days !== 0 && values.userequest === "Approved"  ){
-            var date = new Date();
-            date.setDate(date.getDate() + days);
-            setinitialDate(date.setDate(date.getDate()))
-            var date2 = new Date(date),
-            mnth = ("0" + (date2.getMonth() + 1)).slice(-2),
-            day = ("0" + date2.getDate()).slice(-2);
-             setdueDate([date.getFullYear(), mnth, day].join("-")) 
-           console.log(duedate)
-           console.log(days)
-            setinitialDate(new Date().toISOString().slice(0, 10)) ;
+        // if(days !== 0 && values.userequest === "Approved"  ){
+        //     var date = new Date();
+        //     date.setDate(date.getDate() + days);
+        //     setinitialDate(date.setDate(date.getDate()))
+        //     var date2 = new Date(date),
+        //     mnth = ("0" + (date2.getMonth() + 1)).slice(-2),
+        //     day = ("0" + date2.getDate()).slice(-2);
+        //      setdueDate([date.getFullYear(), mnth, day].join("-")) 
+        // //    console.log(duedate)
+        // //    console.log(days)
+        //     setinitialDate(new Date().toISOString().slice(0, 10)) ;
           
-        }else if(days !== 0 && values.userequest === "Rejected" || values.userequest === "Pending" ){
-            setdueDate('-');
-            setinitialDate('-')
+        // }else if(days !== 0 && values.userequest === "Rejected" || values.userequest === "Pending" ){
+        //     setdueDate('-');
+        //     setinitialDate('-')
      
-        }else if(days !== 0 && request === "Approved"){
-           toast.error('Cannot update Approved Loan')
-        }else if(!loading && request === "Rejected" || request === "Pending"){
-            setdueDate('-');
-            setinitialDate('-')
+        // }else if(days !== 0 && request === "Approved"){
+        //    toast.error('Cannot update Approved Loan')
+        // }else if(!loading && request === "Rejected" || request === "Pending"){
+        //     setdueDate('-');
+        //     setinitialDate('-')
          
-        }
+        // }
     },[])
     return(
         <DashboardWrapper>

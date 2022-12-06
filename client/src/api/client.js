@@ -1,4 +1,4 @@
 import axios from "axios";
 
-export default axios.create({baseURL:'https://maricredit.herokuapp.com/'})
+export default axios.create({baseURL:'http://localhost:5000/'})
 // https://maricredit.herokuapp.com/

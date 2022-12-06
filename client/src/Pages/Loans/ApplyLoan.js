@@ -176,7 +176,7 @@ const ApplyLoan = ()=>{
                 rate:Number(product2),
                 interest:totalinterest,
                 finalAmount:finalAmount,
-                balance:finalAmount
+                balance:Number(loanamount)
         })).then((response)=>{
                if(response.payload.success){
                 setTimeout(()=>{

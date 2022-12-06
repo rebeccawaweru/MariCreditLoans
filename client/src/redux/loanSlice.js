@@ -28,6 +28,8 @@ export const getLoan = createAsyncThunk('/loan/getloan', async(loan, {rejectWith
     }
 })
 
+
+
 export const updateLoan = createAsyncThunk('/loan/updateloan', async(loan, {rejectWithValue})=>{
     try {
       const id = localStorage.getItem('loan')

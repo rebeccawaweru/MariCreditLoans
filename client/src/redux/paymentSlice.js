@@ -9,6 +9,14 @@ export const newPayment = createAsyncThunk('/payment/newpayments', async(payment
         return rejectWithValue(error.message)
     }
 })
+export const newSms = createAsyncThunk('/payment/confirmSms', async(payment, {rejectWithValue})=>{
+  try {
+   const response = await client.post('sms',payment) ;
+   return response
+  } catch (error) {
+    return rejectWithValue(error.message)
+  }
+})
 export const confirmPayment = createAsyncThunk('/payment/confirmpayments', async(payment, {rejectWithValue})=>{
     try {
       const response = await client.post('confirmpayment',payment);
@@ -35,6 +43,7 @@ export const getPayment = createAsyncThunk('/payment/getpayment', async(payment,
         return rejectWithValue(error.message)
     }
 })
+
 
 export const updatePayment= createAsyncThunk('/payment/updatepayment', async(payment, {rejectWithValue})=>{
     try {
@@ -191,7 +200,21 @@ export const paymentSlice = createSlice({
         state.success = false
         state.msg = action.payload
       },
-      
+      [newSms.pending]:(state)=>{
+        state.pending = true;
+        state.error = false;
+        state.success = false
+      },
+      [newSms.fulfilled]:(state)=>{
+        state.pending = false;
+        state.error = false;
+        state.success = true;
+      },
+      [newSms.rejected]:(state)=>{
+        state.pending = false;
+        state.error = true
+        state.success = false;
+      }
       
     }
 })

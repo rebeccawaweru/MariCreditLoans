@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { updateLoan,getLoan } from "../../redux/loanSlice";
 import client from "../../api/client";
 import { toast } from "react-toastify";
-import { confirmPayment } from "../../redux/paymentSlice";
+import { confirmPayment,newSms } from "../../redux/paymentSlice";
 export default function NewPayment(){
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -25,6 +25,7 @@ export default function NewPayment(){
     }
     const handleSubmit = async ()=>{
         console.log(amount,mode,_id,fullname,idnumber,phonenumber,product,email)
+
         await client.post('/payment',{
             loanid:_id,
             name:fullname,
@@ -37,6 +38,11 @@ export default function NewPayment(){
         }).then((response)=>{
             console.log(response)
         if(response.data.success){
+            console.log(phonenumber)
+            dispatch(newSms({
+                phonenumber:phonenumber,
+                message:`Your payment of Ksh${amount} has been received.`
+            }))
             const r = balance - Number(amount);
             console.log(r)
             dispatch(updateLoan({
@@ -64,7 +70,8 @@ export default function NewPayment(){
     }
      useEffect(()=>{
      dispatch(getLoan())
-     },[])
+
+     },[dispatch,phonenumber])
     return(
         <DashboardWrapper>
             <Toast/>

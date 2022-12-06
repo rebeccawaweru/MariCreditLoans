@@ -1,4 +1,4 @@
-// const axios = require('axios')
+const axios = require('axios')
 const Payment = require('../models/Payment');
 const {StatusCodes} = require ('http-status-codes');
 const {createTransport} = require('nodemailer');
@@ -11,12 +11,23 @@ const transporter = createTransport({
 });
 const passkey = process.env.PASSKEY;
 const shortcode = process.env.SHORTCODE;
-const consumerkey = process.env.CONSUMERKEY;
-const consumersecret = process.env.CONSUMERSECRET;
+const Consumerkey = process.env.CONSUMERKEY;
+const Consumersecret = process.env.CONSUMERSECRET;
 
-let date = new Date()
-let time = date.getDate() + "" + "" + date.getMonth() + "" + "" + date.getFullYear() + "" + "" + date.getHours() + "" + "" + date.getMinutes() + "" + "" + date.getSeconds();
-const timestamp = new Buffer.from(time).toString('base64');
+
+// let time = date.getDate() + "" + "" + date.getMonth() + "" + "" + date.getFullYear() + "" + "" + date.getHours() + "" + "" + date.getMinutes() + "" + "" + date.getSeconds();
+// const timestamp = new Buffer.from(time).toString('base64');
+const date = new Date();
+const timestamp = 
+date.getFullYear() + 
+("0" + (date.getMonth() + 1)).slice(-2) +
+("0" + date.getDate()).slice(-2) +
+("0" + date.getHours()).slice(-2) +
+("0" + date.getMinutes()).slice(-2) +
+("0" + date.getSeconds()).slice(-2) 
+
+
+
 
 // const token = (req,res,next)=>{
 //     const url = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
@@ -40,54 +51,59 @@ const timestamp = new Buffer.from(time).toString('base64');
 
 const token = async (req,res,next)=>{
     //in production convert sandbox. to api
-    
-    // const auth = new Buffer.from(`${consumerkey}:${consumersecret}`).toString("base64")
-    // await axios.get('https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials',{
-    //     Headers:{
-    //         authorization: `Basic  ${auth}`,
-    //     },
-    
-    // }).then((response)=>{
-    //     res.status(200).json(data)
-    //     console.log(response.data.access_token)
-    //     token = response.data.access_token
-    //     next() 
-    // }).catch(err=>{
-    //     res.status(400).json(err)
-    //     console.log(err)
-    // })
+    // const auth = new Buffer.from(`${consumerkey}:${consumersecret}`).toString("base64");
+    const auth = Buffer.from(Consumerkey + ':' + Consumersecret).toString('base64');
+    await axios.get('https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials',{
+        headers:{
+            Authorization: 'Basic ' + auth,
+        },
+    }).then((response)=>{
+        console.log(response.data.access_token)
+        let data = response.data;
+        let access_token = data.access_token;
+        req.token = access_token
+        return next() 
+    }).catch(err=>{
+        res.status(400).json(err)
+        console.log(err)
+    })
 }
 
-const stkPush = (req,res)=>{
-// const token = req.token;
+const stkPush = async (req,res)=>{
+   
+const token = req.token;
 // const headers = `Bearer ${token}`;
-// // const password = new Buffer.from(shortcode + passkey + timestamp).toString("base64")
-// //in production convert sandbox. to api
-// axios.post('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',{  
-    
-//     BusinessShortCode:"174379",    
-//     Password: "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMTYwMjE2MTY1NjI3",    
-//     Timestamp:timestamp,    
-//     TransactionType: "CustomerPayBillOnline",    
-//     Amount:"1",    
-//     PartyA:"254702742458",    
-//     PartyB:"174379",    
-//     PhoneNumber:"254702742458",    
-//     CallBackURL:"https://mydomain.com/pat",    
-//     AccountReference:"Test",    
-//     TransactionDesc:"Test"  
-// },{
-//     headers:{
-//         Authorization: `Bearer ${token}`
-//     }
-// }).then((response)=>{
-//     console.log(response);
-//     res.status(200).json(response)
-// }).catch(error=>{
-//     console.log(error.message);
-//     res.status(400).json(error.message)
+const password = Buffer.from(shortcode + passkey + timestamp).toString("base64");
+//in production convert sandbox. to api
+await axios.post('https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest',{  
+    "BusinessShortCode": shortcode,    
+    "Password": password,    
+    "Timestamp": timestamp,    
+    "TransactionType": "CustomerPayBillOnline",    
+    "Amount":"1",    
+    "PartyA":"254702742458",    
+    "PartyB": shortcode,    
+    "PhoneNumber":"254702742458",    
+    "CallBackURL":"https://maricreditloans.netlify.app/",    
+    "AccountReference":"Test",    
+    "TransactionDesc":"Test"
+},{
+    headers:{
+        Authorization: `Bearer ${token}`
+    }
+}).then((response)=>{
+    console.log(response.data);
+    // res.status(200).json(response)
 
-// });
+
+}).catch(error=>{
+    console.log(error);
+    res.status(400).json(error)
+    console.log(password,timestamp)
+  
+
+});
+
 // const stkURL = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
 // let password = new Buffer.from(`${shortcode}${passkey}${timestamp}`).toString('base64');
 // let data = {
@@ -105,10 +121,27 @@ const stkPush = (req,res)=>{
 //     }
 //     axios.post(stkURL, data, { headers: {Authorization: headers}}).then(response=>res.send(response.data));
 }
+
+
+
+
 const cbk = async(req,res)=>{
-    var payload = await req.body;
-    res.status(200).send(payload)
+    const callbackData = await req.body;
+    console.log(callbackData.Body);
+    if(!callbackData.Body.stkCallback.CallbackMetadata){
+        console.log(callbackData.Body);
+       return res.json('ok')
+    }
+   
+    console.log(callbackData.Body.stkCallback.CallbackMetadata)
+    const phone =callbackData.Body.stkCallback.CallbackMetadata.Item[4].Value;
+    const amount = callbackData.Body.stkCallback.CallbackMetadata.Item[0].Value;
+    const trnx_id = callbackData.Body.stkCallback.CallbackMetadata.Item[1].Value;
+
+    //save to database
+
 }
+
 
 const newpayment = async(req,res)=>{
    const {loanid,name,idnumber,phonenumber,amount,mode,product,addedBy} = req.body;
@@ -130,6 +163,39 @@ const confirmpayment = async(req,res)=>{
               We believe,we multipy`
     })
     res.status(StatusCodes.OK).json({success:true, payment})
+}
+
+//send sms
+const sms = async(req,res)=>{
+    const {phonenumber,message} = req.body;
+    var data = JSON.stringify({
+    "apikey": "76aae574a4cfb062777c5b90c70bea49",
+    "partnerID": "2026",
+    "mobile": "254"+phonenumber,
+    "message": message,
+    "shortcode": "MARICREDIT",
+    "pass_type": "plain"
+    });
+    
+    var config = {
+      method: 'post',
+      url: 'https://quicksms.advantasms.com/api/services/sendsms/',
+      headers: { 
+        'Content-Type': 'application/json', 
+        'Cookie': 'PHPSESSID=pc85qbvdjaefs409geuca3ngj3'
+      },
+      data : data
+    };
+    
+    axios(config)
+    .then(function (response) {
+        res.status(StatusCodes.OK).json({success:true})
+      console.log(JSON.stringify(response.data.responses));
+      
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
 }
 const getpayments = async(req,res)=>{
     try {
@@ -228,6 +294,7 @@ const deletepayment = async(req,res)=>{
 
 module.exports = {
 token,
+sms,
 stkPush,
 cbk,
 newpayment,
@@ -236,5 +303,5 @@ getpayment,
 updatepayment,
 deletepayment,
 getloanPay,
-confirmpayment
+confirmpayment,
 }

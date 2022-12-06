@@ -1,9 +1,9 @@
 import React from "react"
-import {Box,Grid, Typography,Button,Toolbar,AppBar, Divider,Container,Paper, Card,CardContent} from '@mui/material'
+import {Box,Typography,Button,Toolbar,AppBar, Divider,Paper, CardContent} from '@mui/material'
 import {useNavigate} from "react-router-dom"
 import playstore from '../../assets/images/playstore.svg'
 import { style } from './style'
-import { images,logo, logo2 } from "../../assets";
+import {logo2 } from "../../assets";
 
 export default function LandingPage(){
     const history = useNavigate()
@@ -40,7 +40,7 @@ export default function LandingPage(){
         }}>MARICREDIT</Typography>   
         <Typography variant="p" component="h3" color="white">We Believe , We Multiply</Typography>  
         <h3><i>Get short term loans</i></h3>
-        <Button variant="outlined" color="success" sx={{boxShadow:10, borderRadius:4, mt:3}} startIcon={<img src={playstore}/>}>
+        <Button variant="outlined" color="success" sx={{boxShadow:10, borderRadius:4, mt:3}} startIcon={<img src={playstore} alt=""/>}>
         <Typography color="black">Download Our App</Typography>
         </Button>
         <Divider sx={{mt:5, mb:5}}><h3>Our Products</h3></Divider>

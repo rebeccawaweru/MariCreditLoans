@@ -2,7 +2,7 @@ import { DashboardWrapper } from "../../Components";
 import {useDispatch,useSelector} from "react-redux";
 import { Details } from "../Components";
 import {CiPercent} from 'react-icons/ci'
-import { FcNext,FcAddDatabase,FcPrevious,FcClock,FcMoneyTransfer,FcBriefcase,FcStatistics,FcPackage,FcPhone,} from "react-icons/fc";
+import {FcAddDatabase,FcPrevious,FcClock,FcMoneyTransfer,FcBriefcase,FcStatistics,FcPackage,FcPhone,} from "react-icons/fc";
 import {TiBusinessCard} from "react-icons/ti"
 import {TfiEmail} from 'react-icons/tfi'
 import {MdOutlinePersonPin} from 'react-icons/md'
@@ -15,12 +15,26 @@ import {Chip } from "@mui/material";
 export default function ViewLoan(){
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [reducingBalance,setreducingBalance] = useState(0)
   const {id} = useParams()
   const {fullname,email,phonenumber,idnumber,job,product,amount,tenature,period,rate,interest,back,front,finalAmount,balance,due,initiation,request}= useSelector(state=>state.loan.loanInfo);
- 
+
+   
    useEffect(()=>{
-    dispatch(getLoan())
-   },[])  
+    dispatch(getLoan()).then(()=>{
+        const date = new Date().toISOString().slice(0, 10)
+        const days = new Date(date.replace(/-/g, "/")).getTime() - new Date(initiation.replace(/-/g, "/")).getTime();
+       const r = 1/30*rate/100
+       //p*r*t
+   
+       if(initiation === '-' ){
+        setreducingBalance(balance)
+       }else{
+        setreducingBalance((balance * r *days/(60 * 60 * 24 * 1000)) + balance)
+       }       
+       
+    })
+   },[dispatch,balance,initiation,rate])  
     return(
         <DashboardWrapper>
         <div className='float-right text-blue-500 py-2 font-bold flex hover:text-black' onClick={()=>navigate('/viewpayment/'+id)}><FcAddDatabase className='text-xl'/>Payments</div>
@@ -46,7 +60,7 @@ export default function ViewLoan(){
                     </div>
              <div >
              <p className="text-sm font-bold">{"Principal"}</p>
-                <Details detail={amount} icon={<GiReceiveMoney/>}/>
+                <Details detail={Math.round(amount).toLocaleString()} icon={<GiReceiveMoney/>}/>
              </div>
               <div>
               <p className="text-sm font-bold">{" Period"}</p>
@@ -55,15 +69,15 @@ export default function ViewLoan(){
              
               <div>
               <p className="text-sm font-bold">{" Interest Rate"}</p>
-                <Details detail={rate + '% p.a'} icon={<CiPercent/>}/>
+                <Details detail={rate + '% p.m'} icon={<CiPercent/>}/>
               </div>
                <div>
                <p className="text-sm font-bold">{"Simple Interest"}</p>
                 <Details detail={interest} icon={<FcStatistics/>}/>
                </div> 
            <div className="mb-2">
-              <p className="text-sm font-bold">{"Final Amount"}</p>
-                <Details detail={finalAmount} icon={<FcMoneyTransfer/>}/>
+              <p className="text-sm font-bold">{"Reducing Balance"}</p>
+                <Details detail={Math.round(reducingBalance).toLocaleString()} icon={<FcMoneyTransfer/>}/>
               </div>
                 </div>
                 <div className="grid grid-cols-3">
@@ -75,6 +89,10 @@ export default function ViewLoan(){
               <p className="text-sm font-bold">{"Due Date"}</p>
                 <Details detail={due} icon={<FcClock/>}/>
               </div> 
+              <div className="mb-2">
+              <p className="text-sm font-bold">{"Final Amount"}</p>
+                <Details detail={Math.round(finalAmount).toLocaleString()} icon={<FcMoneyTransfer/>}/>
+              </div>
             
                 </div>
                 <p  className="text-blue-500 font-bold">Uploads</p>

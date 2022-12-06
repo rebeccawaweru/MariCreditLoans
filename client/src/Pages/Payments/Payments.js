@@ -15,9 +15,10 @@ export default function Payments(){
          console.log(data)
       })
     }
-    
+ 
     useEffect(()=>{
      getPayment()
+
     },[])
     const columns = [
         { field: 'name', 
