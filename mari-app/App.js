@@ -11,7 +11,8 @@ LoginScreen,
 ApplyLoan,
 MyLoans,
 ViewLoan,
-HomeScreen
+HomeScreen,
+NewPayment
 } from './screens';
 import Dashboard from './components/Dashboard'
 export default function App() {
@@ -59,6 +60,19 @@ export default function App() {
       component={MyLoans} 
       options={{
         title:'My Loans',
+        headerStyle:{
+          backgroundColor:'green',
+        },
+        headerTitleStyle: {
+          color: 'white'
+        }
+      }}
+      />
+      <Stack.Screen 
+      name='Pay' 
+      component={NewPayment} 
+      options={{
+        title:'Make Payment',
         headerStyle:{
           backgroundColor:'green',
         },

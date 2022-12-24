@@ -41,17 +41,16 @@ function MyLoans({navigation}) {
           <ScrollView>
           <DataTable style={styles.container}>
       <DataTable.Header style={styles.tableHeader}>
-     
+      <DataTable.Title>Product</DataTable.Title>
         <DataTable.Title>Principal</DataTable.Title>
-        <DataTable.Title>Balance</DataTable.Title>
         <DataTable.Title>Status</DataTable.Title>
     
         <DataTable.Title>Action</DataTable.Title>
       </DataTable.Header>
         {data.map((info)=>{
         return <DataTable.Row key={info._id}>
+        <DataTable.Cell>{info.product}</DataTable.Cell>
         <DataTable.Cell>{info.amount}</DataTable.Cell>
-        <DataTable.Cell>{info.balance}</DataTable.Cell>
         <DataTable.Cell>{info.request}</DataTable.Cell>
     
       

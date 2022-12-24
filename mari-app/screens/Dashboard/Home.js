@@ -5,7 +5,7 @@ import {getUser} from '../../redux/userSlice'
 import { useSelector,useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { Icon } from 'react-native-elements'
-
+import { Center, HStack, VStack } from 'native-base';
 export default function HomeScreen({navigation}){
     const dispatch = useDispatch();
     const {fullname} = useSelector(state=>state.user.userInfo);
@@ -32,9 +32,36 @@ export default function HomeScreen({navigation}){
 
     <Text style={[tw`font-bold text-lg`]}>Hi,{fullname}</Text>
     <Text>Let's get started!</Text>
-    <View>
+    
+    <View style={[tw`mt-4`]}>
+    <HStack space={4}>
+      <HStack space={2}>
+        <Icon
+      type='ionicon'
+      name='wallet-outline'
+      color='green'
+      size={15}
+      />
+      <HStack space={1}>
+    <Text>Balance</Text> 
+       <Text>5,000</Text> 
+      </HStack>
+  
+      </HStack>
 
-    </View>
+      <HStack space={2}>
+      <Icon
+      type='ionicon'
+      name='wallet-outline'
+      color='green'
+      size={15}
+      />
+      <Text onPress={()=>navigation.navigate('Pay')}>Pay</Text> 
+      </HStack>
+
+    </HStack>
+</View>
+
     <View onPress={()=>navigation.navigate('Apply')} style={[tw `h-32 mt-2 w-full rounded-md bg-green-300 relative `]}>
       <Text style={[tw`font-bold text-lg mx-4 my-4`]}>Apply for a loan today!</Text>
      <View  style={[tw`absolute -right-2 -bottom-2`]}>
