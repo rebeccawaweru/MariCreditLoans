@@ -19,7 +19,11 @@ import {
  UpdateProduct,
  Payments,
  NewPayment,
- ViewPayments
+ ViewPayments,
+ Reports,
+ Statements,
+ Analysis,
+ ViewStatement
 } from './Pages'
 function App() {
   return (
@@ -43,6 +47,10 @@ function App() {
      <Route path='/newpayment/:id' element={<NewPayment/>}/>
      <Route path='/viewpayment/:id' element={<ViewPayments/>}/>
      <Route path='/payments' element={<Payments/>}/>
+     <Route path ='/reports' element={<Reports/>}/>
+     <Route path='/analysis' element={<Analysis/>}/>
+     <Route path='/statements' element={<Statements/>}/>
+     <Route path='/viewstatement/:id' element={<ViewStatement/>}/>
   </Routes>
   </BrowserRouter>
 

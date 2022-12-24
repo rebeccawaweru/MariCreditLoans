@@ -115,7 +115,7 @@ export const paymentSlice = createSlice({
         state.error = false;
       },
       [confirmPayment.fulfilled]:(state)=>{
-        toast.success('Payment created successfully')
+        // toast.success('Payment created successfully')
         state.pending = false;
         state.success = true;
         state.error = false;
@@ -169,7 +169,7 @@ export const paymentSlice = createSlice({
         state.error = false;
       },
       [updatePayment.fulfilled]:(state)=>{
-        toast.success('Payment updated successfully')
+        // toast.success('Payment updated successfully')
         state.pending = false;
         state.success = true;
         state.error = false;

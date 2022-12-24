@@ -16,7 +16,7 @@ export default function ResetPassword(){
     const navigate = useNavigate()
     const {pending,msg} = useSelector(state=>state.user);
     const handleReset =(values)=>{
-    dispatch(resetpassword({...values}))
+    dispatch(resetpassword({email:values.email}))
    }
     useEffect(()=>{
         if(msg.success){
@@ -39,7 +39,7 @@ export default function ResetPassword(){
     heading='Reset Password'
     paragraph='Enter your email to receive reset OTP'
     linkName='Login'
-    linkUrl='/'/>
+    linkUrl='/login'/>
     <Formik
     initialValues={{
     email:''}}

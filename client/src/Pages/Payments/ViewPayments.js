@@ -1,6 +1,4 @@
-import { DashboardWrapper,ExportExcel,Button } from "../../Components";
-import { useDispatch,useSelector } from "react-redux";
-import axios from 'axios'
+import { DashboardWrapper,ExportExcel,} from "../../Components";
 import client from "../../api/client";
 import { useEffect, useState } from "react";
 import Box from '@mui/material/Box';
@@ -8,7 +6,6 @@ import { DataGrid } from '@mui/x-data-grid';
 import { useParams,useNavigate } from "react-router-dom";
 import {FcAddDatabase,FcPrint} from 'react-icons/fc'
 export default function ViewPayments(){
-  const dispatch = useDispatch();
     const navigate = useNavigate()
     const {id} = useParams()
     const [data,setData] = useState([])
@@ -26,18 +23,24 @@ export default function ViewPayments(){
      getPayment()
     },[])
     const columns = [
+      {
+        field:'transactioncode',
+        headerName:'Mpesa Code',
+        width:120,
+        editable:true
+     },
         {
           field:'amount',
           headerName:'Amount',
-          width:150,
+          width:100,
           editable:true
        },
-       {
-        field:'mode',
-        headerName:'Mode',
-        width:150,
-        editable:true
-     },
+    //    {
+    //     field:'mode',
+    //     headerName:'Mode',
+    //     width:150,
+    //     editable:true
+    //  },
         {
           field:'product',
           headerName:'Loan Product',
@@ -48,14 +51,14 @@ export default function ViewPayments(){
         field:'payday',
         headerName:'Date',
         width:150,
-        editable:true
+      
      },
-        {
-          field: 'addedBy',
-          headerName: 'Added By:',
-          width: 150,
-          editable: true,
-        },
+        // {
+        //   field: 'addedBy',
+        //   headerName: 'Added By:',
+        //   width: 150,
+        //   editable: true,
+        // },
       
         // {field: "Action",
         // width: 110,
@@ -77,8 +80,9 @@ export default function ViewPayments(){
          <FcPrint className="text-3xl" onClick={()=>window.print()}/>
          </div>
      
-         <Box sx={{ height:400, width: '100%' }}>  
-         <DataGrid
+      <Box sx={{ height:400, width: '100%' }}>  
+  
+      <DataGrid
         rows={data}
         columns={columns}
         pageSize={5}

@@ -6,15 +6,13 @@ import { DashboardWrapper,CustomModal, Toast,ExportExcel } from '../../Component
 import { useDispatch,useSelector } from 'react-redux';
 import { deleteLoan,getLoans } from '../../redux/loanSlice';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'
+
 export default function Loans() {
   const dispatch = useDispatch();
   const navigate = useNavigate()
   const [open,setOpen] = useState(false)
   const {data} = useSelector(state=>state.loan)
-  const [intDate, setintDate] = useState('')
-  const [reducingBalance,setreducingBalance] = useState(0)
-        const date = new Date().toISOString().slice(0, 10);
+  const date = new Date().toISOString().slice(0, 10);
   const day = 24 * 60 * 60 * 1000;
 
   const handleView = (id)=>{
@@ -43,6 +41,11 @@ export default function Loans() {
    
    },[data])
    const columns = [
+    {
+      field:'loanID',
+      headerName: 'Loan ID',
+      width:80
+    },
     { field: 'fullname', 
     headerName: 'Full Name',
      width: 150 },
@@ -52,87 +55,94 @@ export default function Loans() {
     //   width: 150,
     //   editable: true,
     // },
-    {
-      field: 'idnumber',
-      headerName: 'ID Number',
-      width: 90,
-      editable: true,
-    },
+    // {
+    //   field: 'idnumber',
+    //   headerName: 'ID Number',
+    //   width: 90,
+  
+    // },
     {
       field: 'product',
       headerName: 'Product',
-      width: 120,
-      editable: true,
+      width: 85,
+  
     },
     {
       field: 'amount',
       headerName: 'Principal',
-      width: 100,
-      editable: true,
+      width: 90,
+  
       valueFormatter:({ value }) => value.toLocaleString()
     },
     {
       field: 'rate',
       headerName: 'Rate',
-      width: 100,
-      editable: true,
+      width: 90,
+  
       valueFormatter:({ value }) => value + '% p.m'
     },
     {
       field: 'tenature',
-      headerName: 'Tenature',
-      width: 30,
-      editable: true,
-      
+      headerName: 'Time',
+      width: 80,
+     valueGetter:function(params){
+        return params.row.tenature + " " + params.row.period
+     }
     },
-    {
-      field:'period',
-      headerName: '',
-      width: 70,
-      editable: true,
-    },
-    {
-      field:'interest',
-      headerName: 'Interest',
-      width: 90,
-      editable: true,
-      valueFormatter:({ value }) => value.toLocaleString()
-    },
-    {
-      field: 'finalAmount',
-      headerName: 'Total Due',
-      width: 140,
-      editable: true,
-      valueFormatter:({ value }) => value.toLocaleString()
-    },
-    {
-      field: 'R.Balance',
-      valueGetter: function(params) {
-        if(params.row.initiation === "-"){
-          return Math.round(params.row.balance).toLocaleString()
-        }else {
-          return Math.round(params.row.balance * (1/30*params.row.rate/100) * ((new Date(date.replace(/-/g, "/")).getTime() - new Date(params.row.initiation.replace(/-/g, "/")).getTime())/day) + params.row.balance ).toLocaleString()
-        }
-      }
-      // valueGetter: (params) => (params.row.balance * (1/30*params.row.rate/100) * ((new Date(date.replace(/-/g, "/")).getTime() - new Date(params.row.initiation.replace(/-/g, "/")).getTime())/day) + params.row.balance ),
-    },
+
+  //   {
+  //     field:'Interest',
+  //     width: 70,
+  //     valueGetter: function(params) {
+  //       if(params.row.initiation === "-"){
+  //         return Math.round(params.row.balance * (1/30*params.row.rate/100) * 0).toLocaleString()
+  //       }else {
+  //         return Math.round(params.row.balance * (1/30*params.row.rate/100) * ((new Date(date.replace(/-/g, "/")).getTime() - new Date(params.row.initiation.replace(/-/g, "/")).getTime())/day) ).toLocaleString()
+  //       }
+  //     }
+  //   },
+  //   {
+  //     headerName:'A.Paid',
+  //     width:65,
+  //     valueGetter: function(params){
+  //    return Math.round(params.row.amount-params.row.balance).toLocaleString()
+  //   },
+  // },
+  //   {
+  //     field: 'R.Balance',
+  //     valueGetter: function(params) {
+  //       if(params.row.initiation === "-"){
+  //         return Math.round(params.row.balance).toLocaleString()
+  //       }else {
+  //         return Math.round(params.row.balance * (1/30*params.row.rate/100) * ((new Date(date.replace(/-/g, "/")).getTime() - new Date(params.row.initiation.replace(/-/g, "/")).getTime())/day) + params.row.balance ).toLocaleString()
+  //       }
+  //     }
+  //     // valueGetter: (params) => (params.row.balance * (1/30*params.row.rate/100) * ((new Date(date.replace(/-/g, "/")).getTime() - new Date(params.row.initiation.replace(/-/g, "/")).getTime())/day) + params.row.balance ),
+  //   },
+  //   {
+  //     field: 'finalAmount',
+  //     headerName: 'Total Due',
+  //     width: 80,
+  
+  //     valueFormatter:({ value }) =>value.toLocaleString()
+  //   },
     {
       field: 'initiation',
       headerName: 'Initiation Date',
       width: 120,
-      editable: true,
+  
     },
     {
       field: 'due',
       headerName: 'Loan Maturity',
       width: 120,
-      editable: true,
+  
     },
     {
       field: 'request',
       headerName: 'Status',
       width: 100,
-      editable: true,
+  
       
     },
     {field: "Action",

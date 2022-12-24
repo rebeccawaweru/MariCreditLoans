@@ -11,10 +11,11 @@ import {CgSandClock} from 'react-icons/cg'
 import {GiReceiveMoney} from 'react-icons/gi'
 import {FcBriefcase,FcPhone,} from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import client from "../../api/client";
 export default function UpdateLoan(){
     const {data} = useSelector(state=>state.product)
-    const {fullname,email,phonenumber,idnumber,job,product,amount,tenature,period,request,front,back,rate,interest,finalAmount,initiation,due} = useSelector(state=>state.loan.loanInfo)
+    const {fullname,email,phonenumber,idnumber,job,product,amount,tenature,period,request,front,back,rate,interest,finalAmount,initiation,due,loanID} = useSelector(state=>state.loan.loanInfo)
     const [userFront,setuserFront] = useState('')
     const [userBack,setuserBack] = useState('')
     const navigate = useNavigate()
@@ -160,6 +161,18 @@ export default function UpdateLoan(){
              due:duedate || due,
              initiation:initialdate || initiation
            })).then((response)=>{
+            setOpen(false)
+               if(userequest === "Approved"){
+                client.post('/sms',{
+                phonenumber:phonenumber,
+                message:`Dear ${fullname}, your loan of ksh ${amount.toLocaleString()} has been approved.For future payments use Paybill:4037355, AccountNumber: ${loanID}`
+                })
+               }
+               Swal.fire(
+                'SUCCESS',
+                'Loan updated successfully',
+                'success'
+               );
                if(response.payload.success){
                 
                    setTimeout(()=>{

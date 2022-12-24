@@ -1,15 +1,24 @@
-import React from "react"
+import React,{useEffect} from "react"
 import {Box,Typography,Button,Toolbar,AppBar, Divider,Paper, CardContent} from '@mui/material'
 import {useNavigate} from "react-router-dom"
 import playstore from '../../assets/images/playstore.svg'
 import { style } from './style'
 import {logo2 } from "../../assets";
-
+// import client from '../../api/client'
+// import axios from 'axios'
 export default function LandingPage(){
     const history = useNavigate()
     const handleSubmit = ()=>{
         history("/login")
     }
+    async function cbk(){
+      // await axios.post('/https://cc10-197-237-132-183.ap.ngrok.io/callback').then((response)=>{
+      //  console.log(response)
+      // })
+    }
+    useEffect(()=>{
+   cbk()
+    })
     return(
       <div className="bg2">
     <Box sx={style.land}>

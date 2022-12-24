@@ -2,14 +2,15 @@ const Loan = require('../models/Loan')
 const {StatusCodes} = require('http-status-codes')
 
 const creatloan = async(req,res) =>{
-const {fullname,phonenumber,email,idnumber,job,product,amount,period,tenature,front,back,rate,interest,finalAmount,balance} = req.body;
-const loan = await Loan.create({fullname,phonenumber,email,idnumber,job,product,amount,period,tenature,front,back,rate,interest,finalAmount,balance})
+const random = Math.floor(10000 + Math.random() * 30000);
+const {fullname,phonenumber,email,idnumber,job,product,amount,period,tenature,front,back,rate,interest,finalAmount,balance,loanID} = req.body;
+const loan = await Loan.create({loanID:'C'+random,fullname,phonenumber,email,idnumber,job,product,amount,period,tenature,front,back,rate,interest,finalAmount,balance})
 res.status(StatusCodes.CREATED).json({success:true, loan})   
    
 }
 
 const getloans = async(req,res)=>{
-    const loan = await Loan.find({})
+    const loan = await Loan.find({}).sort({requestedOn:-1})
     res.status(StatusCodes.OK).json({success:true, loan})  
 }
 const getloan = async(req,res)=>{

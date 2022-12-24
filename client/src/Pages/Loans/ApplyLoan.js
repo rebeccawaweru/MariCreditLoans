@@ -1,18 +1,18 @@
-import { Button, DashboardWrapper,Input,Toast } from "../../Components";
-import { FcNext,FcPrevious,FcClock,FcMoneyTransfer,FcBriefcase,FcPackage,FcPhone,} from "react-icons/fc";
+import { DashboardWrapper,Input,Toast } from "../../Components";
+import { FcNext,FcPrevious,FcBriefcase,FcPackage,FcPhone,} from "react-icons/fc";
 import {TiBusinessCard} from "react-icons/ti"
 import {TfiEmail} from 'react-icons/tfi'
 import {MdOutlinePersonPin} from 'react-icons/md'
 import {CgSandClock} from 'react-icons/cg'
 import {GiReceiveMoney} from 'react-icons/gi'
 import { useEffect, useState } from "react";
-import { Formik } from "formik";
 import * as Yup from 'yup';
 import { Details } from "../Components";
 import { useNavigate } from "react-router-dom";
 import { useDispatch,useSelector } from "react-redux";
 import { newLoan } from "../../redux/loanSlice";
 import { getProducts } from "../../redux/productSlice";
+import Swal from "sweetalert2";
 const regx = /^\d{10}$/;
 const ApplyLoan = ()=>{
     const navigate = useNavigate();
@@ -103,15 +103,16 @@ const ApplyLoan = ()=>{
         setUpload(false)
     }
     const handleUpload = ()=>{
-        if(!front || !back){
-         setMessage('ID Photos are required')
-        }else{
-            setMessage('')
-        }
-        setTimeout(()=>{
-            setUpload(false)
-            setProduct(true)
-        },1000)
+        // if(!front || !back){
+        //  setMessage('ID Photos are required')
+        // }else{
+        //     setMessage('')
+        // }
+        // setTimeout(()=>{
+        //     setUpload(false)
+        // },1000)
+        setProduct(true)
+        setUpload(false)
     }
     const handleUpload2 = ()=>{
         setUpload(true)
@@ -161,8 +162,9 @@ const ApplyLoan = ()=>{
    
     const handleComplete = async()=>{
         const finalAmount = Number(totalinterest) + parseInt(loanamount);
+
         dispatch(newLoan({
-                fullname:fullname,
+                fullname:fullname.toUpperCase(),
                 phonenumber:Number(phonenumber),
                 email:email,
                 idnumber:Number(id),
@@ -178,7 +180,13 @@ const ApplyLoan = ()=>{
                 finalAmount:finalAmount,
                 balance:Number(loanamount)
         })).then((response)=>{
+        
                if(response.payload.success){
+                Swal.fire(
+                    'SUCCESS',
+                    'Loan created successfully',
+                    'success'
+                   );
                 setTimeout(()=>{
                     navigate('/loans')
                 },3000)

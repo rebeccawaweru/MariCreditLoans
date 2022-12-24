@@ -10,7 +10,7 @@ import {CgSandClock} from 'react-icons/cg'
 import {GiReceiveMoney} from 'react-icons/gi'
 import { useEffect, useState } from "react";
 import { getLoan } from "../../redux/loanSlice";
-import { useNavigate,useParams, useSearchParams } from "react-router-dom";
+import { useNavigate,useParams} from "react-router-dom";
 import {Chip } from "@mui/material";
 export default function ViewLoan(){
   const dispatch = useDispatch();
@@ -18,8 +18,6 @@ export default function ViewLoan(){
   const [reducingBalance,setreducingBalance] = useState(0)
   const {id} = useParams()
   const {fullname,email,phonenumber,idnumber,job,product,amount,tenature,period,rate,interest,back,front,finalAmount,balance,due,initiation,request}= useSelector(state=>state.loan.loanInfo);
-
-   
    useEffect(()=>{
     dispatch(getLoan()).then(()=>{
         const date = new Date().toISOString().slice(0, 10)

@@ -21,7 +21,7 @@ const login = async(values,formikActions)=>{
   try {
   await dispatch(updateUser2({...values})).then((res)=>{
     if(res.payload){
-      navigation.navigate("Dashboard")
+      navigation.navigate("HomeScreen")
     }
   })
   } catch (error) {

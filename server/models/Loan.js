@@ -20,6 +20,11 @@ const loanSchema = mongoose.Schema({
         required:true,
         trim:true,
     },
+    loanID:{
+        type:String,
+        required:true,
+        trim:true
+    },
     job:{
         type:String,
         trim:true,
@@ -46,11 +51,11 @@ const loanSchema = mongoose.Schema({
     },
     front:{
         type:String,
-        required:true
+        // required:true
     },
     back:{
         type:String,
-        required:true
+        // required:true
     },
     rate:{
         type:Number,

@@ -127,7 +127,7 @@ export const loanSlice = createSlice({
         state.error = false;
       },
       [updateLoan.fulfilled]:(state)=>{
-        toast.success('Loan updated successfully')
+        // toast.success('Loan updated successfully')
         state.pending = false;
         state.success = true;
         state.error = false;

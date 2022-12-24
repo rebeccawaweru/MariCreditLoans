@@ -1,26 +1,28 @@
 import { DashboardWrapper,ExportExcel} from "../../Components";
-import { useDispatch,useSelector } from "react-redux";
-import axios from 'axios'
+import { useDispatch} from "react-redux";
 import client from "../../api/client";
 import { useEffect, useState } from "react";
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 import { FcPrint } from "react-icons/fc";
+
 export default function Payments(){
-    const dispatch = useDispatch();
     const [data,setData] = useState([])
     async function getPayment(){
       await client.get('/payment').then((response)=>{
          setData(response.data.payment)
-         console.log(data)
       })
     }
- 
     useEffect(()=>{
      getPayment()
-
     },[])
     const columns = [
+      {
+        field:'transactioncode',
+        headerName:'Transaction code',
+        width:125,
+        editable:true
+     },
         { field: 'name', 
         headerName: 'Name',
          width: 150 },
@@ -33,7 +35,7 @@ export default function Payments(){
         {
            field:'phonenumber',
            headerName:'Phone',
-           width:100,
+           width:130,
            editable:true
         },
         {
@@ -49,12 +51,7 @@ export default function Payments(){
         width:100,
         editable:true
      },
-     {
-      field:'',
-      headerName:'CODE',
-      width:120,
-      editable:true
-   },
+   
         {
           field:'product',
           headerName:'Loan Product',

@@ -4,7 +4,10 @@ const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const {isEmpty} = require('lodash');
 const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com', 
     service:'gmail',
+    port: 465,
+    secure: true,
     auth:{
     user:process.env.GMAIL_USER,
     pass:process.env.GMAIL_PASSWORD

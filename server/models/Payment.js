@@ -29,9 +29,17 @@ const paymentSchema = mongoose.Schema({
     type:Number,
     required:true,
     },
-    mode:{
+    transactioncode:{
     type:String,
     required:true,
+    },
+    reducingbalance:{
+    type:Number,
+    required:true
+    },
+    mode:{
+    type:String,
+    default:'mpesa'
     },
     addedBy:{
         type:String,

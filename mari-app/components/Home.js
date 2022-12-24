@@ -1,5 +1,6 @@
 import React from 'react';
 import {View,Text,ImageBackground,TouchableOpacity,StyleSheet} from 'react-native'
+import { LinearGradient } from 'expo-linear-gradient'; 
 
 export default function Home({navigation}){
     const handleApply = () =>{
@@ -16,7 +17,10 @@ export default function Home({navigation}){
     <ImageBackground
     style={styles.background}
     source={require('../assets/bg1.jpg')}>
-         <View style={{flexDirection:"row"}}>
+       <LinearGradient
+        colors={['rgba(0,0,0,0.6)','rgba(0,0,0,0.7)' ]}
+        style={{flex: 1, width:"100%",justifyContent:'center',alignItems:'center'}}>
+        <View style={{flexDirection:"row"}}>
              <TouchableOpacity style={styles.btn} onPress={()=>navigation.navigate('Apply')}>
                  <Text style={styles.title}>Apply for a loan</Text>
              </TouchableOpacity>
@@ -32,6 +36,7 @@ export default function Home({navigation}){
                  <Text style={styles.title}>My Payments</Text>
              </TouchableOpacity>
          </View>
+         </LinearGradient>
          </ImageBackground>
         </>
      );
@@ -56,6 +61,7 @@ export default function Home({navigation}){
      },
      background:{
          flex:1,
+         width:"100%",
          justifyContent:"center",
          alignItems:"center"
      },
