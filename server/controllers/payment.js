@@ -254,6 +254,10 @@ var smsdata = JSON.stringify({
       .then(function (response) {
         console.log(JSON.stringify(response.data.responses));
       }).catch((err)=>console.log(err.message));
+      await Loan.findOneAndUpdate({loanID:loan.loanID},{
+        balance:reducingbalance
+    }).then((response)=>console.log(response))
+    .catch((err)=>console.log(err.message))
   const payment = await Payment.create({
     loanid:loan._id,
     name:loan.fullname,
@@ -265,10 +269,7 @@ var smsdata = JSON.stringify({
     product:loan.product,
     })
     res.status(StatusCodes.OK).json({success:true, payment})
-    await Loan.findOneAndUpdate({loanID:loan.loanID},{
-        balance:reducingbalance
-    }).then((response)=>console.log(response))
-    .catch((err)=>console.log(err.message))
+ 
 }
 
 

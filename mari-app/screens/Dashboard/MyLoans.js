@@ -53,10 +53,10 @@ function MyLoans({navigation}) {
         <DataTable.Cell>{info.amount}</DataTable.Cell>
         <DataTable.Cell>{info.request}</DataTable.Cell>
     
-      
         <DataTable.Cell onPress={()=>onOpen(handleView(info._id))}>
          View
         </DataTable.Cell>
+        
         </DataTable.Row>
         })}
     </DataTable>
