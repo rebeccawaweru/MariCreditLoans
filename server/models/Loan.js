@@ -73,6 +73,10 @@ const loanSchema = mongoose.Schema({
         type:Number,
         required:true,
     },
+    accountbalance:{
+        type:Number,
+        default:0
+    },
     request:{
         type:String,
         default:"Pending",

@@ -1,35 +1,47 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import FormContainer from './FormContainer';
 import FormInput from './FormInput';
 import FormSubmitButton from './FormSubmitButton';
 import {Formik} from 'formik'
 import * as  Yup from 'yup'
 import {useDispatch,useSelector} from 'react-redux';
-import { updateUser2 } from '../redux/userSlice';
-import { ScrollView } from 'react-native';
+import { updateUser2,reset } from '../redux/userSlice';
+import { ScrollView,Alert,Text,View } from 'react-native';
+import tw from 'tailwind-react-native-classnames';
 const validationSchema = Yup.object({
   email: Yup.string().email('Invalid email!').required('Email  is required'),
   password:Yup.string().trim().min(6,'password must have 6 or more characters').required('Password is required')
 })
 const LoginForm = ({navigation})=> {
-const dispatch = useDispatch()
+const dispatch = useDispatch();
+const {msg,isLoggedin} = useSelector(state=>state.user);
 const userInfo = {
   email:'',
   password:''
 }
 const login = async(values,formikActions)=>{
-  try {
-  await dispatch(updateUser2({...values})).then((res)=>{
-    if(res.payload){
-      navigation.navigate("HomeScreen")
-    }
-  })
-  } catch (error) {
-    console.log(error.message)
-  }
+  await dispatch(updateUser2({...values}));
   formikActions.resetForm()
   formikActions.setSubmitting(false)
 }
+useEffect(()=>{
+  if(isLoggedin){
+    navigation.navigate("HomeScreen")
+ }
+  if(msg === 'Network Error' || msg === "Request failed with status code 500" ){
+    Alert.alert('Error','Please check your internet connection and try again') 
+    setTimeout(()=>{
+      dispatch(reset())
+    },3000)
+    
+     }else if (msg === "Request failed with status code 401"){
+    Alert.alert('Error','Incorrect credentials') 
+    setTimeout(()=>{
+      dispatch(reset())
+    },3000)
+ }
+
+},[msg,isLoggedin,dispatch])
     return (
       <ScrollView>
       <FormContainer>
@@ -47,7 +59,7 @@ const login = async(values,formikActions)=>{
       handleSubmit})=>{
         const{email,password}= values
         return (
-          <>
+          <ScrollView>
       <FormInput
       autoCapitalize="none" 
       label="Email"
@@ -59,7 +71,7 @@ const login = async(values,formikActions)=>{
 
       <FormInput 
       autoCapitalize="none" 
-      secureTextEntry
+     type='password'
       label="Password" 
       value={password} 
       error={touched.password && errors.password}
@@ -71,7 +83,11 @@ const login = async(values,formikActions)=>{
       submitting={isSubmitting}
       onPress={handleSubmit} 
       title='Login'/>
-         </>
+    
+      <Text style={[tw`font-bold text-blue-500 mt-2 text-right`]} onPress={()=>navigation.navigate('ForgotPassword')}>Forgot Password?</Text>
+    
+    
+         </ScrollView>
          )}}
        </Formik>
     </FormContainer>

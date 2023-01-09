@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import client from '../api/client'
-import { toast } from "react-toastify";
+
 export const newPayment = createAsyncThunk('/payment/newpayments', async(payment, {rejectWithValue})=>{
     try {
       const response = await client.post('payment',payment);
@@ -101,9 +101,7 @@ export const paymentSlice = createSlice({
         state.error = false;
       },
       [newPayment.rejected]:(state,action)=>{
-        if(action.payload === 'Network Error'){
-          toast.error('Please check your internet and try again')
-        }
+      
         state.pending = false;
         state.error = true;
         state.success = false
@@ -121,9 +119,7 @@ export const paymentSlice = createSlice({
         state.error = false;
       },
       [confirmPayment.rejected]:(state,action)=>{
-        if(action.payload === 'Network Error'){
-          toast.error('Please check your internet and try again')
-        }
+     
         state.pending = false;
         state.error = true;
         state.success = false
@@ -175,9 +171,7 @@ export const paymentSlice = createSlice({
         state.error = false;
       },
       [updatePayment.rejected]:(state,action)=>{
-        if(action.payload === 'Network Error'){
-          toast.error('Please check your internet and try again')
-        }
+      
         state.pending = false;
         state.error = true;
         state.success = false
@@ -189,7 +183,7 @@ export const paymentSlice = createSlice({
         state.error = false;
       },
       [deletePayment.fulfilled]:(state)=>{
-        toast.warning('Payment deleted successfully')
+    
         state.pending = false;
         state.success = true;
         state.error = false;

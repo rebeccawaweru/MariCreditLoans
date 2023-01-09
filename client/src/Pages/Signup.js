@@ -2,7 +2,7 @@ import { AuthWrapper, Button, Header,Input,Toast } from "../Components"
 import { Formik } from "formik"
 import * as Yup from 'yup'
 import { useSelector,useDispatch } from "react-redux";
-import { signup,reset } from "../redux/userSlice";
+import { signup } from "../redux/userSlice";
 import {  useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
@@ -57,7 +57,8 @@ export default function Signup(){
     email:'',
     phonenumber:0,
     password:'',
-    confirmpassword:''
+    confirmpassword:'',
+    usertype:'staff'
    }}>
   {({
      values,
@@ -67,7 +68,7 @@ export default function Signup(){
      handleBlur,
      handleSubmit 
   })=>{
-    const {fullname,email,phonenumber,password,confirmpassword}= values;
+    const {fullname,email,phonenumber,password,confirmpassword,usertype}= values;
     return(
     <>
       <div className="grid grid-cols-2 space-x-2">

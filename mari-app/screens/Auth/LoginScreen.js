@@ -45,7 +45,7 @@ function LoginScreen({navigation}) {
    style={styles.container}
     source={require('../../assets/b4.jpg')}
     >
-         <View style={{flex:1, paddingTop:50}}>
+         <View style={{flex:1, paddingTop:20}}>
          <Image source={require('../../assets/logo2.png')} style={{height:160,width:250,alignSelf:'center'}}/>
            <View style={{height:80}}>
            <FormHeader
@@ -58,7 +58,7 @@ function LoginScreen({navigation}) {
            />
            </View>
        
-           <View style={{flexDirection:"row", paddingHorizontal:20, marginBottom:20}}>
+           <View style={{flexDirection:"row", paddingHorizontal:20, marginBottom:10}}>
                <FormSelectorButton
                 backgroundColor={loginColorInterpolate} 
                 style={styles.borderLeft} title='Login'

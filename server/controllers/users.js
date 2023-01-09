@@ -3,11 +3,9 @@ const {StatusCodes} = require('http-status-codes');
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const {isEmpty} = require('lodash');
+const axios = require('axios')
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com', 
     service:'gmail',
-    port: 465,
-    secure: true,
     auth:{
     user:process.env.GMAIL_USER,
     pass:process.env.GMAIL_PASSWORD
@@ -55,22 +53,37 @@ const getUser = async (req,res) =>{
     res.status(StatusCodes.OK).json({success:true,user})
 }
 const resetpassword = async(req,res)=>{
-const {email} = req.body;
+const {phonenumber} = req.body;
+let zero = 0 + phonenumber;
 const otp = Math.floor(100000 + Math.random() * 600000);
-await User.findOne({email}).then((user)=>{
+
+await User.findOne({zero}).then((user)=>{
     if(isEmpty(user)){
-        res.status(StatusCodes.NOT_FOUND).send('Email does not exist');
+        res.status(StatusCodes.NOT_FOUND).send('Phone Number does not exist');
     };
     user.otp = otp;
-    user.save().then(()=>{
-    transporter.sendMail({
-            from:process.env.GMAIL_USER,
-            to:email,
-            subject:'RESET PASSWORD',
-            html:`<p>Enter this 6-digit code <h3>${otp}</h3></p>`
+    user.save();
+    var smsdata = JSON.stringify({
+        "apikey": "76aae574a4cfb062777c5b90c70bea49",
+        "partnerID": "2026",
+        "mobile": "254"+phonenumber,
+        "message":"OTP:"+otp,
+        "shortcode": "MARICREDIT",
+        "pass_type": "plain"
         });
-    res.status(StatusCodes.OK).json({success:true, message:'Check your email'}) 
-    });
+        var config = {
+            method: 'post',
+            url: 'https://quicksms.advantasms.com/api/services/sendsms/',
+            headers: { 
+              'Content-Type': 'application/json', 
+              'Cookie': 'PHPSESSID=pc85qbvdjaefs409geuca3ngj3'
+            },
+            data : smsdata
+        };
+          axios(config)
+          .then(function (response) {
+            return res.status(StatusCodes.OK).json({success:true, message:'OTP sent'}) 
+          }).catch((err)=>console.log(err));
 })};
 const confirmPassword = async(req,res)=>{
     const {otp} = req.body;
@@ -100,4 +113,10 @@ const newpassword = async(req,res)=>{
 
        
 }
-module.exports = {getUser,getUsers,register,resetpassword,confirmPassword,newpassword,login}
+
+const addUserField = async(req,res)=>{
+    const field =  await User.updateMany({}, { $set: { usertype: 'mobile' } });
+    res.json({field})
+   }
+
+module.exports = {addUserField,getUser,getUsers,register,resetpassword,confirmPassword,newpassword,login}

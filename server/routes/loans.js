@@ -1,10 +1,11 @@
 const express = require('express')
 const router = express.Router()
-const {getloans,getloan,creatloan,updateloan,deleteloan,myloans,loanrequest,getUserloans,loan} = require('../controllers/loans')
+const {getloans,getloan,creatloan,updateloan,deleteloan,myloans,loanrequest,addLoanField,getUserloans,loan} = require('../controllers/loans')
 // const permissionMiddleware = require('../middleware/permissions')
 
 router.route('/loan').get(getloans).post(creatloan);
 router.route('/loan/:id').get(getloan).patch(updateloan).delete(deleteloan);
+router.route('/addfield').post(addLoanField)
 
 // router.route('/userloans/:phone/:user', permissionMiddleware).get(getUserloans)
 

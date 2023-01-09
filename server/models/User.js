@@ -14,6 +14,11 @@ const userSchema = mongoose.Schema({
         type:String,
         require:[true,'Please enter phone number'],
     },
+    accountbalance:{
+         type:Number,
+         default:0,
+         
+    },
     password:{
         type:String,
         require:[true, 'Please enter password']
@@ -30,6 +35,10 @@ const userSchema = mongoose.Schema({
     backavatar:{
         type:String,
         default:"",
+    },
+    usertype:{
+        type:String,
+        default:'mobile'
     }
 })
 

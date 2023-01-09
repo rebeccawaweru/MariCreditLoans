@@ -1,8 +1,9 @@
 import  React,{useState,useEffect} from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid} from '@mui/x-data-grid';
+import {FcSearch} from 'react-icons/fc'
 import {FcInfo,FcFullTrash,FcEditImage,FcAddDatabase,FcPrint} from 'react-icons/fc'
-import { DashboardWrapper,CustomModal, Toast,ExportExcel } from '../../Components';
+import { DashboardWrapper,Input,CustomModal, Toast,ExportExcel } from '../../Components';
 import { useDispatch,useSelector } from 'react-redux';
 import { deleteLoan,getLoans } from '../../redux/loanSlice';
 import { useNavigate } from 'react-router-dom';
@@ -11,10 +12,20 @@ export default function Loans() {
   const dispatch = useDispatch();
   const navigate = useNavigate()
   const [open,setOpen] = useState(false)
+  const [search,setSearch] = useState('')
   const {data} = useSelector(state=>state.loan)
   const date = new Date().toISOString().slice(0, 10);
   const day = 24 * 60 * 60 * 1000;
-
+  const handleSearch = (e)=>{
+    setSearch(e.target.value);
+ }
+  const loandata = data.filter(function(loan){
+    return loan.active === false
+  });
+  const tabledata = 
+  loandata.filter((item,key) => 
+  item.fullname.includes(search.toUpperCase()) ||  item.fullname.includes(search) 
+  );
   const handleView = (id)=>{
     localStorage.setItem('loan', id);
     navigate('/viewloan/'+id)
@@ -158,12 +169,16 @@ export default function Loans() {
   ];
   return (
     <DashboardWrapper>
+      
       <Toast/>
       <div className='float-right text-blue-500 py-2 font-bold flex hover:text-black' onClick={()=>navigate('/apply')}><FcAddDatabase className='text-xl'/>Add Loan</div>
         <p className="text-blue-500 py-2 font-bold">Loans</p>
-        <div className="mb-2 flex space-x-2">
+        <div className=" flex space-x-2">
          <ExportExcel apiData={data} fileName='All Loans' />
          <FcPrint className="text-3xl" onClick={()=>window.print()}/>
+         <Box className='w-1/4 -mt-6'>
+        <Input placeholder='Search name...' icon={<FcSearch/>} value={search} handleChange={handleSearch} />
+        </Box>
          </div>
     <Box sx={{ height: 450,
        width: '100%',
@@ -177,9 +192,8 @@ export default function Loans() {
         color: '#1a3e72',
       }, }}>
       <CustomModal subject='delete loan?' open={open} handleDelete={handleConfirm} handleClose={handleClose} title='Delete' color='error' />
-        
-      <DataGrid
-        rows={data}
+       {search ?    <DataGrid
+        rows={tabledata}
         columns={columns}
         getCellClassName={(params) => {
           if (params.value === 'Rejected') {
@@ -192,7 +206,22 @@ export default function Loans() {
         experimentalFeatures={{ newEditingApi: true }}
         getRowId={(row)=>row._id}
         style={{fontFamily:"arial"}}
-      />
+      />:    <DataGrid
+      rows={loandata}
+      columns={columns}
+      getCellClassName={(params) => {
+        if (params.value === 'Rejected') {
+          return params.value ='rejected' ;
+        }
+        return params.value === 'Approved' ? 'approved' : null;
+      }}
+      pageSize={6}
+      rowsPerPageOptions={[6]}
+      experimentalFeatures={{ newEditingApi: true }}
+      getRowId={(row)=>row._id}
+      style={{fontFamily:"arial"}}
+    /> } 
+   
     </Box>
     </DashboardWrapper>
   );

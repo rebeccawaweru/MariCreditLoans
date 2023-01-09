@@ -1,9 +1,8 @@
-import { Button, ScrollView,Text, View } from "react-native"
-import { Divider,Center } from "native-base";
+import { Button, ScrollView,Text, View,Alert } from "react-native"
+import { Divider,Center} from "native-base";
 import tw from "tailwind-react-native-classnames";
 import FormContainer from "../../components/FormContainer";
 import FormInput from "../../components/FormInput";
-import Swal from "sweetalert2";
 import { getLoans,updateLoan } from "../../redux/loanSlice";
 import { newSms,confirmPayment } from "../../redux/paymentSlice";
 import { useState,useEffect } from "react";
@@ -14,15 +13,22 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const NewPayment = ({navigation})=>{
     const dispatch = useDispatch();
     const [loan,setLoan] = useState([])
+    const [empty,setEmpty] = useState(true)
     const {email,phonenumber,fullname} = useSelector(state=>state.user.userInfo);
     useEffect(()=>{
       dispatch(getUser()).then(()=>{
         client.post('/myloans/'+email).then((response)=>{
-            setLoan(response.data.loan[0])
-            AsyncStorage.setItem('payment', response.data.loan[0]._id);
-             console.log(response.data.loan)
-        })
+            if(response.data.success){
+              setLoan(response.data.loan[0])
+              AsyncStorage.setItem('payment', response.data.loan[0]._id);
+              setEmpty(false)
+            }
+         
+        }).catch((err)=>{
+          setEmpty(true)
+         })
       });
+
 
 
       },[dispatch])
@@ -48,11 +54,13 @@ const NewPayment = ({navigation})=>{
           if (reqcount === 20) {
             clearInterval(timer);
             setLoading(false);
-            Swal.fire(
-                "ERROR",
-                "Proccess Timeout. You took too long to pay",
-                "error"
-            );
+        
+            alert('Proccess Timeout. You took too long to pay');
+            // Swal.fire({
+            //   title : "ERROR",
+            //   html: <p>"Proccess Timeout. You took too long to pay"</p>,
+            //   icon:  "error"
+            // });
             return;
           }
           client
@@ -83,17 +91,23 @@ const NewPayment = ({navigation})=>{
                            amount:amount,
                            balance:Math.round(reducingBalance).toLocaleString(), 
                         })).then((response)=>{
-                            console.log(response)
+                          
                             if(response.payload.success){
                                 setLoading(false);
-                                Swal.fire(
-                                    "SUCCESS!",
-                                    "We received your loan payment",
-                                    "success"
-                                  );
-                                setTimeout(()=>{
-                                    navigation.navigate('HomeScreen')
-                                },3000)
+                                // alert('Your loan payment has been received')
+                                Alert.alert('Success', 'Your loan payment has been received')
+                                // Swal.fire({
+                                //   title:"SUCCESS!",
+                                //   text:<Text>"We received your loan payment"</Text>,
+                                //   icon: "success"
+                                // }
+                                  
+                                //   );
+                              
+                                navigation.goBack();
+
+                                    navigation.push('HomeScreen');
+                             
                             }
                         })
                      }
@@ -101,43 +115,52 @@ const NewPayment = ({navigation})=>{
                 })
             
               }else if(response.data.ResultCode === 1032){
-                  Swal.fire(
-                    'ERROR',
-                    'Request was cancelled by user',
-                    'error'
-                  )
+                Alert.alert({
+                  title:'Error',
+                  message:'Request cancelled by user'
+                 })
+                // alert( 'Request cancelled by user')
+                  // Swal.fire(
+                  //   'ERROR',
+                  //   'Request was cancelled by user',
+                  //   'error'
+                  // )
               } else if (response.errorCode === "500.001.1001") {
-                Swal.fire(
-                    'ERROR',
-                    'Wrong pin entered',
-                    'error'
-                  )
+                alert('Wrong pin entered')
+                // Swal.fire(
+                //     'ERROR',
+                //     'Wrong pin entered',
+                //     'error'
+                //   )
               } else {
                 clearInterval(timer);
                 setLoading(false);
                 setError(true);
                 setErrorMsg(response.data.ResultDesc);
-                Swal.fire(
-                    'ERROR',
-                    'An error occurred.Please try again',
-                    'error'
-                  )
-                // console.log(response);
-              }
+                alert('An error occurred.Please try again')
+                // Swal.fire(
+                //     'ERROR',
+                //     'An error occurred.Please try again',
+                //     'error'
+                //   )
+                }
             })
             .catch((err) => {
-              console.log(err.message);
+              // console.log(err.message);
             });
         }, 2000);
       }
       const handleSubmit = async ()=>{
-        console.log(loan.product,loan.amount, loan.loanID)
-        if(loan.initiation === '-'){
-            Swal.fire(
-                'Error',
-                'Your cannot pay for a pending/rejected loan',
-                'error'
-            )
+  
+        if(!amount){
+           alert('Amount is required')
+        }else if(loan.initiation === '-'){
+               alert( 'Your cannot pay for a pending/rejected loan');
+            // Swal.fire(
+            //     'Error',
+            //     'Your cannot pay for a pending/rejected loan',
+            //     'error'
+            // )
         }else{
             await client.post('/mpesa',{
                 loanid:loan._id,
@@ -149,36 +172,46 @@ const NewPayment = ({navigation})=>{
                 setLoading(true);
                 stkPushQuery(response.data.CheckoutRequestID);
          }).catch((err)=>{
-            Swal.fire(
-                'ERROR',
-                'An error occurred.Please try again',
-                'error'
-              )
-              console.log(err)
+            alert( 'An error occurred.Please try again')
+            // Alert.alert({
+            //   title:'Error',
+            //   message:'An error occurred.Please try again'
+            //  })
+            // Swal.fire(
+            //     'ERROR',
+            //     'An error occurred.Please try again',
+            //     'error'
+            //   )
+              // console.log(err)
          })
         }
     };
     return(
        <ScrollView>
-
         <FormContainer>
-            <FormInput
+          {!empty ?
+          <>
+             <FormInput
           value={amount}
           onChangeText={value => handleOnChangeText(value,'amount')}
-            label='Amount'
-            placeholder="Enter amount"/>
-            <Button onPress={handleSubmit} title="Initiate Payment"/>
-        </FormContainer>
-
+          label='Amount'
+          placeholder="Enter amount"/>
+          <Button onPress={handleSubmit} title="Initiate Payment"/>
         <Center ><Text>OR</Text></Center>
          <View style={[tw`p-4`]}>
         <Text>1.Open your sim tool kit</Text>
         <Text>2.Select Lipa na Mpesa-Paybill</Text>
-        <Text>3.Enter Paybill Number:<b>4037355</b></Text>
-        <Text>4.Enter Account Number:<b>{loan.loanID}</b></Text>
+        <Text>3.Enter Paybill Number:4037355</Text>
+        <Text style={[tw`font-bold`]}>4.Enter Account Number:{loan.loanID}</Text>
         <Text>5.Select OK</Text>
         </View>
-        
+          </> : 
+             <View style={[tw`p-4`]}>
+            <Text>Apply for loan to make payment</Text>
+             </View>
+             }
+       
+        </FormContainer>
        </ScrollView>
     )
 }

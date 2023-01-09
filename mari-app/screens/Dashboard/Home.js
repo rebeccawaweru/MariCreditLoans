@@ -1,31 +1,40 @@
-import {View,Text,Image,ScrollView,Button} from 'react-native';
+import {View,Text,Image} from 'react-native';
 import { ImageBackground } from 'react-native';
 import tw from 'tailwind-react-native-classnames';
-import {getUser} from '../../redux/userSlice'
+import {getUser,logout} from '../../redux/userSlice'
 import { useSelector,useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Icon } from 'react-native-elements'
-import { Center, HStack, VStack } from 'native-base';
+import { HStack,} from 'native-base';
 import client from '../../api/client';
+
 export default function HomeScreen({navigation}){
     const dispatch = useDispatch();
-    const [loan,setLoan] = useState([])
     const [reducing,setReducing] = useState(0)
     const {fullname,email} = useSelector(state=>state.user.userInfo);
+    const handleLogout = ()=>{
+      dispatch(logout())
+      navigation.navigate('Login')
+    }
     useEffect(()=>{
-      dispatch(getUser()).then((response)=>{
-        console.log(response.payload.email)
+    
+      dispatch(getUser())
+      .then((response)=>{
+     
         client.post('/myloans/'+response.payload.email).then((response)=>{
-          console.log(response.data.loan[0].balance)
-           const date = new Date().toISOString().slice(0, 10)
-           const days = new Date(date.replace(/-/g, "/")).getTime() - new Date(response.data.loan[0].initiation.replace(/-/g, "/")).getTime();
-           const newrate = 1/30*response.data.loan[0].rate/100;
-           setReducing((response.data.loan[0].balance * newrate *days/(60 * 60 * 24 * 1000)) + response.data.loan[0].balance)
-   
+              if(response.data.success){
+                const date = new Date().toISOString().slice(0, 10)
+                const days = new Date(date.replace(/-/g, "/")).getTime() - new Date(response.data.loan[0].initiation.replace(/-/g, "/")).getTime();
+                const newrate = 1/30*response.data.loan[0].rate/100;
+                setReducing((response.data.loan[0].balance * newrate *days/(60 * 60 * 24 * 1000)) + response.data.loan[0].balance)
+              }else{
+                setReducing(0)
+              }
+       }).catch((err)=>{
+        setReducing(0)
        })
       });
    
-
 
       },[dispatch])
     return(
@@ -41,7 +50,7 @@ export default function HomeScreen({navigation}){
       type='ionicon'
       color='green'
       size={25}
-      onPress={()=>navigation.navigate('Login')}
+      onPress={handleLogout}
      />
      </View>
       </View>
@@ -60,7 +69,7 @@ export default function HomeScreen({navigation}){
       />
       <HStack space={1}>
     <Text>Balance</Text> 
-       <Text><b>{Math.round(reducing).toLocaleString()}</b></Text> 
+       <Text style={[tw`font-bold`]}>{Math.round(reducing).toLocaleString()}</Text> 
       </HStack>
   
       </HStack>

@@ -23,7 +23,8 @@ import {
  Reports,
  Statements,
  Analysis,
- ViewStatement
+ ViewStatement,
+ ClosedLoans
 } from './Pages'
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
      <Route path ='/reports' element={<Reports/>}/>
      <Route path='/analysis' element={<Analysis/>}/>
      <Route path='/statements' element={<Statements/>}/>
+     <Route path='/closedloans' element={<ClosedLoans/>}/>
      <Route path='/viewstatement/:id' element={<ViewStatement/>}/>
   </Routes>
   </BrowserRouter>

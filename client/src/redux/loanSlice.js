@@ -64,7 +64,9 @@ export const loanSlice = createSlice({
         data:[]   
     },
     reducers:{
-
+     reset:(state)=>{
+      state.loanInfo = ''
+     }
     },
     extraReducers:{
       [newLoan.pending]:(state)=>{
@@ -163,4 +165,5 @@ export const loanSlice = createSlice({
     }
 })
 
-export default loanSlice.reducer
+export default loanSlice.reducer;
+export const {reset} = loanSlice.actions

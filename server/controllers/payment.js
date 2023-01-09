@@ -212,31 +212,71 @@ const customerbusinness = async(req,res)=>{
    })
 }
 
-const validation = async(req,res)=>{
+const validation = async(req,res)=>{}
 
-}
 const callback2 = async(req,res)=>{
-const response = await JSON.stringify(req.body);
-const date = new Date().toISOString().slice(0, 10);
-const day = 24 * 60 * 60 * 1000;
-const data =`${response}`;
-const obj = JSON.parse(data);
-// console.log(obj.TransID)  
-// console.log(obj.BillRefNumber)
-const char = obj.BillRefNumber
-const rest = char.slice(1)
-const id = char.charAt(0).toUpperCase()+rest
-const loan = await Loan.findOne({loanID:id})
-if(!loan){
-  res.status(StatusCodes.NOT_FOUND).json('Loan not found');
-}
-const reducingbalance = Number(loan.balance) - Number(obj.TransAmount);
-const r = Math.round(reducingbalance * (1/30*loan.rate/100) * ((new Date(date.replace(/-/g, "/")).getTime() - new Date(loan.initiation.replace(/-/g, "/")).getTime())/day) + reducingbalance ).toLocaleString();
-const message =`Dear Customer, your payment for loanID ${id} of ksh ${obj.TransAmount} has been received. Your current loan balance is ${r}.Thank you.`
+    const response = await JSON.stringify(req.body);
+    const date = new Date().toISOString().slice(0, 10);
+    const day = 24 * 60 * 60 * 1000;
+    const data =`${response}`;
+    const obj = JSON.parse(data);
+    // console.log(obj.TransID)  
+    // console.log(obj.BillRefNumber)
+    const char = obj.BillRefNumber
+    const rest = char.slice(1)
+    const id = char.charAt(0).toUpperCase()+rest
+    const loan = await Loan.findOne({loanID:id})
+    const reducingbalance = Number(loan.balance) - Number(obj.TransAmount);
+    const r = Math.round(reducingbalance * (1/30*loan.rate/100) * ((new Date(date.replace(/-/g, "/")).getTime() - new Date(loan.initiation.replace(/-/g, "/")).getTime())/day) + reducingbalance );
+    const message =`Dear Customer, your payment for loanID ${id} of ksh ${obj.TransAmount} has been received. Your current loan balance is ${r}.Thank you.`
+    var smsdata = JSON.stringify({
+        "apikey": "76aae574a4cfb062777c5b90c70bea49",
+        "partnerID": "2026",
+        "mobile": "254"+loan.phonenumber,
+        "message":message,
+        "shortcode": "MARICREDIT",
+        "pass_type": "plain"
+        });
+        var config = {
+            method: 'post',
+            url: 'https://quicksms.advantasms.com/api/services/sendsms/',
+            headers: { 
+              'Content-Type': 'application/json', 
+              'Cookie': 'PHPSESSID=pc85qbvdjaefs409geuca3ngj3'
+            },
+            data : smsdata
+        };
+         await axios(config)
+          .then(function (response) {
+            console.log(JSON.stringify(response.data.responses));
+          }).catch((err)=>console.log(err.message));
+          await Loan.findOneAndUpdate({loanID:loan.loanID},{
+            balance:reducingbalance
+        }).then((response)=>console.log(response))
+        .catch((err)=>console.log(err.message))
+      const payment = await Payment.create({
+        loanid:loan._id,
+        name:loan.fullname,
+        idnumber:loan.idnumber,
+        phonenumber:loan.phonenumber,
+        amount:obj.TransAmount,
+        reducingbalance:r,
+        transactioncode:obj.TransID,
+        product:loan.product,
+        })
+        res.status(StatusCodes.OK).json({success:true, payment})
+ if(!loan){
+const num = (obj.MSISDN).slice(-3);
+const query = { phonenumber: { $regex: new RegExp('458' + '$') } };
+const loan2 = await Loan.find(query);
+console.log(loan2)
+ const reducingbalance = Number(loan2.balance) - Number(obj.TransAmount);
+const r = Math.round(reducingbalance * (1/30*loan2.rate/100) * ((new Date(date.replace(/-/g, "/")).getTime() - new Date(loan2.initiation.replace(/-/g, "/")).getTime())/day) + reducingbalance );
+const message =`Dear Customer, your payment for loanID ${loan2.loanID} of ksh ${obj.TransAmount} has been received. Your current loan balance is ${r}.Thank you.`
 var smsdata = JSON.stringify({
     "apikey": "76aae574a4cfb062777c5b90c70bea49",
     "partnerID": "2026",
-    "mobile": "254"+loan.phonenumber,
+    "mobile": "254"+loan2.phonenumber,
     "message":message,
     "shortcode": "MARICREDIT",
     "pass_type": "plain"
@@ -254,25 +294,25 @@ var smsdata = JSON.stringify({
       .then(function (response) {
         console.log(JSON.stringify(response.data.responses));
       }).catch((err)=>console.log(err.message));
-      await Loan.findOneAndUpdate({loanID:loan.loanID},{
+      await Loan.findOneAndUpdate({loanID:loan2.loanID},{
         balance:reducingbalance
     }).then((response)=>console.log(response))
     .catch((err)=>console.log(err.message))
   const payment = await Payment.create({
-    loanid:loan._id,
-    name:loan.fullname,
-    idnumber:loan.idnumber,
-    phonenumber:loan.phonenumber,
+    loanid:loan2._id,
+    name:loan2.fullname,
+    idnumber:loan2.idnumber,
+    phonenumber:loan2.phonenumber,
     amount:obj.TransAmount,
     reducingbalance:r,
     transactioncode:obj.TransID,
-    product:loan.product,
-    })
-    res.status(StatusCodes.OK).json({success:true, payment})
- 
+    product:loan2.product,
+    }).then(()=>{
+        res.status(StatusCodes.OK).json({success:true, payment}) 
+    }) 
+        };
+        //end of if
 }
-
-
 
 //send sms
 const sms = async(req,res)=>{

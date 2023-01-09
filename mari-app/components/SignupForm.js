@@ -4,10 +4,9 @@ import FormInput from './FormInput';
 import FormSubmitButton from './FormSubmitButton';
 import {Formik} from 'formik'
 import * as  Yup from 'yup'
-import {useDispatch} from 'react-redux';
-import { signup } from '../redux/userSlice';
-import Swal from "sweetalert2";
-
+import {useDispatch,useSelector} from 'react-redux';
+import { signup,reset } from '../redux/userSlice';
+import { KeyboardAvoidingView,Alert } from 'react-native';
 const regx = /^\d{10}$/;
 const validationSchema = Yup.object({
 fullname : Yup.string().trim().min(5,'invalid name!').required('Full name is required'),
@@ -17,7 +16,7 @@ password:Yup.string().trim().min(6,'password must have 6 or more characters').re
 confirmPassword:Yup.string().equals([Yup.ref('password'),null],'Passwords do not match!')
 })
 const SignupForm = ({navigation})=> {
-
+  const {msg,pending} = useSelector(state=>state.user);
   const dispatch = useDispatch();
   const userInfo = {
     fullname:'',
@@ -28,25 +27,31 @@ const SignupForm = ({navigation})=> {
 }
 
 const signUp = async(values,formikActions)=>{
-  try {
+
     await dispatch(signup({...values})).then((res)=>{
       if(res.payload.success){
-        Swal.fire({
-          title: "Success",
-          text: "Signup successful",
-          icon: "success",
-          confirmButtonText: "OK",
-        });
-      } 
+        Alert.alert('Success','Signup successful' )
+        navigation.navigate("HomeScreen");
+
+      }
     })
-  
-  } catch (error) {
-    console.log(error)
-  }
-   
   formikActions.resetForm()
   formikActions.setSubmitting(false)
 }
+useEffect(()=>{
+  if(msg === 'Network Error' || msg === "Request failed with status code 500" ){
+      Alert.alert('Error','Please check your internet connection and try again') 
+       setTimeout(()=>{
+      dispatch(reset())
+    },3000)
+      }else if (msg === "Request failed with status code 400"){
+      Alert.alert('Error','Email  already exists') 
+      setTimeout(()=>{
+        dispatch(reset())
+      },3000)
+  }
+
+},[msg,pending,dispatch,])
 
   return (
 <FormContainer>
@@ -65,7 +70,7 @@ const signUp = async(values,formikActions)=>{
       handleSubmit})=>{
      const{fullname,email,phonenumber,password,confirmPassword}= values
      return (
-          <>
+          <KeyboardAvoidingView>
           <FormInput
           value={fullname}
           error={touched.fullname && errors.fullname}
@@ -95,7 +100,7 @@ const signUp = async(values,formikActions)=>{
             
             <FormInput
             autoCapitalize="none"
-            secureTextEntry
+           
             label="Password"
             value={password}
             error={touched.password && errors.password}
@@ -104,7 +109,7 @@ const signUp = async(values,formikActions)=>{
             placeholder="*******"/>
 
             <FormInput autoCapitalize="none"
-              secureTextEntry
+              
               label="Confirm Password"
               title="password"
               placeholder="********"
@@ -116,7 +121,8 @@ const signUp = async(values,formikActions)=>{
 
               <FormSubmitButton 
               submitting={isSubmitting}
-              onPress={handleSubmit} title='Signup' /></>
+              onPress={handleSubmit} title='Signup' />
+              </KeyboardAvoidingView>
   
     )}}
 </Formik>

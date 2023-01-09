@@ -7,19 +7,21 @@ import { getLoans } from '../../redux/loanSlice';
 import { useNavigate } from 'react-router-dom';
 import {Box } from '@mui/material';
 import { useState } from 'react';
-export default function Statements(){
+export default function ClosedLoans(){
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [search,setSearch] = useState('')
     const {data} = useSelector(state=>state.loan)
     const loandata = 
     data.filter((item,key)=>{
-       return item.active === false && item.request === 'Approved'
+       return item.active === true 
     });
     const tabledata = 
         loandata.filter((item,key) =>
-          item.fullname.includes(search.toUpperCase()) ||  item.fullname.includes(search) 
+          item.fullname.includes(search.toUpperCase())
         );
+ 
+      
       const handleSearch = (e)=>{
          setSearch(e.target.value);
          console.log(e.target.value)
@@ -81,17 +83,17 @@ export default function Statements(){
          }
         },
        
-        {
-          field:'Interest',
-          width: 70,
-          valueGetter: function(params) {
-            if(params.row.initiation === "-"){
-              return Math.round(params.row.balance * (1/30*params.row.rate/100) * 0).toLocaleString()
-            }else {
-              return Math.round(params.row.balance * (1/30*params.row.rate/100) * ((new Date(date.replace(/-/g, "/")).getTime() - new Date(params.row.initiation.replace(/-/g, "/")).getTime())/day) ).toLocaleString()
-            }
-          }
-        },
+        // {
+        //   field:'Interest',
+        //   width: 70,
+        //   valueGetter: function(params) {
+        //     if(params.row.initiation === "-"){
+        //       return Math.round(params.row.balance * (1/30*params.row.rate/100) * 0).toLocaleString()
+        //     }else {
+        //       return Math.round(params.row.balance * (1/30*params.row.rate/100) * ((new Date(date.replace(/-/g, "/")).getTime() - new Date(params.row.initiation.replace(/-/g, "/")).getTime())/day) ).toLocaleString()
+        //     }
+        //   }
+        // },
         {
           headerName:'A.Paid',
           width:65,
@@ -101,25 +103,15 @@ export default function Statements(){
  
       },
                 {
-      field: 'R.Balance',
-      width:80,
+      field: 'Account Balance',
+      width:120,
       valueGetter: function(params) {
-        if(params.row.initiation === "-"){
-          return Math.round(params.row.balance).toLocaleString()
-        }else {
-          return Math.round(params.row.balance * (1/30*params.row.rate/100) * ((new Date(date.replace(/-/g, "/")).getTime() - new Date(params.row.initiation.replace(/-/g, "/")).getTime())/day) + params.row.balance ).toLocaleString()
-        }
+       
+          return Math.round(params.row.accountbalance).toLocaleString()
+        
       }
       // valueGetter: (params) => (params.row.balance * (1/30*params.row.rate/100) * ((new Date(date.replace(/-/g, "/")).getTime() - new Date(params.row.initiation.replace(/-/g, "/")).getTime())/day) + params.row.balance ),
     },
-        
-        {
-          field: 'finalAmount',
-          headerName: 'Total Due',
-          width: 80,
-          editable: true,
-          valueFormatter:({ value }) =>value.toLocaleString()
-        },
         {
           field: 'initiation',
           headerName: 'Initiation Date',

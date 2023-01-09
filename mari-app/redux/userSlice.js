@@ -1,6 +1,7 @@
 import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
 import client from "../api/client";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert } from "react-native";
 export const updateUser2 = createAsyncThunk('users/update',async (user, {rejectWithValue})=>{
     try { 
         const response = await client.post('login',
@@ -17,6 +18,7 @@ export const signup = createAsyncThunk('users/signup', async(user, {rejectWithVa
   try {
     const response = await client.post('newuser',
     user);
+    await AsyncStorage.setItem('user', response.data.user._id);
     return response.data;
   } catch (error) {
     return rejectWithValue(error.message)
@@ -44,7 +46,7 @@ export const confirmpassword = createAsyncThunk('/users/confirmpassword', async(
 
 export const newpassword = createAsyncThunk('/users/newpassword', async(user,{rejectWithValue})=>{
   try {
-    const email = localStorage.getItem('email');
+    const email = await AsyncStorage.getItem('email');
     const response = await client.post(`newpassword/${email}`, user);
     return response.data;
   } catch (error) {
@@ -120,17 +122,12 @@ export const userSlice = createSlice({
         state.error = false;
       },
       [signup.fulfilled]:(state,action)=>{
-        toast.show('Signup successful')
         state.pending = false;
         state.error = false;
         state.msg = action.payload
       },
       [signup.rejected]:(state,action)=>{
-        if(action.payload === 'Network Error' || action.payload === "Request failed with status code 500" ){
-          toast.error('Please check your internet connection and try again') 
-          }else if (action.payload === "Request failed with status code 400"){
-          toast.error('Email  already exists') 
-        }
+      
         state.pending = false;
         state.error = true;
         state.msg = action.payload
@@ -198,7 +195,7 @@ export const userSlice = createSlice({
         state.error = false
        },
        [newpassword.fulfilled]:(state,action)=>{
-        AsyncStorage.removeItem('email');
+      
          state.pending = false;
          state.error = false;
          state.msg = action.payload;

@@ -39,7 +39,7 @@ export default function ConfrimPassword(){
             toast.error('Please check your internet connection and try again') 
         }
         dispatch(reset())
-    },[dispatch,msg,navigate,pending])
+    },[dispatch,msg,navigate,pending]);
     return(
     <AuthWrapper>
    {confirm ? 

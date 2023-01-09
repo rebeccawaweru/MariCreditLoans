@@ -21,7 +21,6 @@ function ApplyLoan({navigation}) {
     const [back,setBack] = useState('');
     const [confirm,setConfirm] = useState(false);
     const [alert,setAlert] = useState(false)
- 
     const [product2,setProduct2] = useState('')
     const [totalinterest,setTotalInterest] = useState('')
     const [values,setValues] = useState({
@@ -103,7 +102,7 @@ function ApplyLoan({navigation}) {
         }
     }
     const handleConfirm=async()=>{
-         if (!idnumber || !job || !product || !amount || !tenature || !period || !front || !back ) {
+         if (!idnumber || !job || !product || !amount || !tenature || !period  ) {
             // Swal.fire({
             //     title: "Error",
             //     text: "Please fill in the required fields",
@@ -135,7 +134,7 @@ function ApplyLoan({navigation}) {
     const handleComplete = async()=>{
         const finalAmount = Number(totalinterest) + parseInt(amount);
         dispatch(newLoan({
-                fullname:fullname,
+                fullname:fullname.toUpperCase(),
                 phonenumber:phonenumber,
                 email:email,
                 idnumber:Number(idnumber),
@@ -160,7 +159,7 @@ function ApplyLoan({navigation}) {
                 //   });
                 Alert.alert('Success', 'Application sent!')
                   setTimeout(()=>{
-                         navigation.navigate('Dashboard')
+                         navigation.navigate('HomeScreen')
                   },3000)
                }
         })

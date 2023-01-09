@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "mari-app",
-    "slug": "mari-app",
+    "name": "Maricredit",
+    "slug": "MariCredit",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/logo2.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/logo2.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -24,10 +24,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo2.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.beccawaweru.MariCredit"
     },
     "web": {
       "favicon": "./assets/logo2.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6f05ad53-c71c-400c-801e-95ef557e7039"
+      }
     }
   }
 }

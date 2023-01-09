@@ -12,7 +12,9 @@ ApplyLoan,
 MyLoans,
 ViewLoan,
 HomeScreen,
-NewPayment
+NewPayment,
+ForgotPassword,
+ConfirmPassword
 } from './screens';
 import Dashboard from './components/Dashboard'
 export default function App() {
@@ -21,7 +23,7 @@ export default function App() {
   <Provider store = {store}>
        <NativeBaseProvider>
   <NavigationContainer>
- <Stack.Navigator initialRouteName='HomeScreen'>
+ <Stack.Navigator initialRouteName='Welcome'>
  <Stack.Screen
        name='Dashboard'
        component={Dashboard}
@@ -95,6 +97,33 @@ export default function App() {
       headerShown:false
      }}
       />
+  <Stack.Screen 
+      name='ForgotPassword' 
+      component={ForgotPassword} 
+      options={{
+        title:'Forgot Password',
+        headerStyle:{
+          backgroundColor:'green',
+        },
+        headerTitleStyle: {
+          color: 'white'
+        }
+      }}
+      />
+       <Stack.Screen 
+      name='ConfirmPassword' 
+      component={ConfirmPassword} 
+      options={{
+        title:'Reset Password',
+        headerStyle:{
+          backgroundColor:'green',
+        },
+        headerTitleStyle: {
+          color: 'white'
+        }
+      }}
+      />
+
 
       </Stack.Navigator>
   </NavigationContainer>

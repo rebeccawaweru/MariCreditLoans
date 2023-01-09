@@ -17,6 +17,11 @@ export default function NewPayment(){
     const id = localStorage.getItem('loan')
     const email2 = useSelector(state=>state.user.userInfo.email)
     const {fullname,idnumber,phonenumber,product,_id,balance,email,initiation,rate} = useSelector(state=>state.loan.loanInfo);
+  
+    const date = new Date().toISOString().slice(0, 10)
+    const days = new Date(date.replace(/-/g, "/")).getTime() - new Date(initiation.replace(/-/g, "/")).getTime();
+    const currentreducingbalance = ((balance * (1/30*rate/100) * days/(60 * 60 * 24 * 1000)) +balance) ;
+   
     const [data,setData] = useState({
         amount:'',
         mode:'',
@@ -56,41 +61,81 @@ export default function NewPayment(){
             clearInterval(timer);
             //successfull payment
             const r = balance - Number(amount);
-                const date = new Date().toISOString().slice(0, 10)
-                const days = new Date(date.replace(/-/g, "/")).getTime() - new Date(initiation.replace(/-/g, "/")).getTime();
                 const newrate = 1/30*rate/100;
                const reducingBalance = ((r * newrate *days/(60 * 60 * 24 * 1000)) + r)
                setReduced(reducingBalance);
+               if(Number(amount) >= currentreducingbalance){
+                const b = Number(amount)-currentreducingbalance;
                 dispatch(newSms({
-                    phonenumber:phonenumber,
-                    message:`Your payment of Ksh${Math.round(amount).toLocaleString()} has been received. Your current balance is Ksh${Math.round(reducingBalance).toLocaleString()}`
+                  phonenumber:phonenumber,
+                  message:`Your loan has been cleared successfully.Your account balance
+                  is Ksh. ${b}. Thank you for choosing MariCredit.`
                 }))
-            dispatch(updateLoan({
-              balance:r
-            })).then((response)=>{
-                 if(response.payload.success){
-                    dispatch(confirmPayment({
-                       email:email,
-                       fullname:fullname,
-                       amount:amount,
-                       balance:Math.round(reducingBalance).toLocaleString(), 
-                    })).then((response)=>{
-                        console.log(response)
-                        if(response.payload.success){
-                            setLoading(false);
-                            Swal.fire(
-                                "SUCCESS!",
-                                "We received your loan payment",
-                                "success"
-                              );
-                            setTimeout(()=>{
-                                navigate('/viewpayment/'+id)
-                            },3000)
-                        }
-                    })
-                 }
-             
-            })
+                dispatch(updateLoan({
+                  accountbalance:b,
+                  balance:r,
+                  active:true
+                })).then((response)=>{
+                     if(response.payload.success){
+                        dispatch(confirmPayment({
+                           email:email,
+                           fullname:fullname,
+                           amount:amount,
+                           balance:Math.round(b).toLocaleString(), 
+                        })).then((response)=>{
+                            console.log(response)
+                            if(response.payload.success){
+                                setLoading(false);
+                                Swal.fire(
+                                    "SUCCESS!",
+                                    "We received your loan payment",
+                                    "success"
+                                  );
+                                setTimeout(()=>{
+                                    navigate('/viewpayment/'+id)
+                                },3000)
+                            }
+                        })
+                     }
+                 
+                })
+
+              }else{
+
+                dispatch(newSms({
+                  phonenumber:phonenumber,
+                  message:`Your payment of Ksh${Math.round(amount).toLocaleString()} has been received. Your loan balance is Ksh${Math.round(reducingBalance).toLocaleString()}`
+              }))
+              dispatch(updateLoan({
+                balance:r
+              })).then((response)=>{
+                   if(response.payload.success){
+                      dispatch(confirmPayment({
+                         email:email,
+                         fullname:fullname,
+                         amount:amount,
+                         balance:Math.round(reducingBalance).toLocaleString(), 
+                      })).then((response)=>{
+                          console.log(response)
+                          if(response.payload.success){
+                              setLoading(false);
+                              Swal.fire(
+                                  "SUCCESS!",
+                                  "We received your loan payment",
+                                  "success"
+                                );
+                              setTimeout(()=>{
+                                  navigate('/viewpayment/'+id)
+                              },3000)
+                          }
+                      })
+                   }
+               
+              })
+
+              }
+               
+         
         
           }else if(response.data.ResultCode === 1032){
               Swal.fire(
@@ -123,6 +168,7 @@ export default function NewPayment(){
     }, 2000);
   }
     const handleSubmit = async ()=>{
+      
         if(initiation === '-'){
             Swal.fire(
                 'Error',
@@ -155,66 +201,119 @@ export default function NewPayment(){
         }
     };
     const handleBankSubmit = ()=>{
-      const r = balance - Number(amount);
-      const date = new Date().toISOString().slice(0, 10)
-      const days = new Date(date.replace(/-/g, "/")).getTime() - new Date(initiation.replace(/-/g, "/")).getTime();
-      const newrate = 1/30*rate/100;
-     const reducingBalance = ((r * newrate *days/(60 * 60 * 24 * 1000)) + r)
-
       if(initiation === '-'){
         Swal.fire(
             'Error',
             'Your cannot pay for a pending/rejected loan',
             'error'
         )
-    }else{
-      dispatch(newPayment({
-        loanid:id,
-        name:fullname,
-        idnumber:idnumber,
-        phonenumber:phonenumber,
-        amount:amount,
-        reducingbalance:Number(reducingBalance),
-        transactioncode:code,
-        mode:mode,
-        product:product,
-        addedBy:email2
-      })).then((response)=>{
-        if(response.payload.success){
-       
-          dispatch(newSms({
-              phonenumber:phonenumber,
-              message:`Your bank payment ${code}, of Ksh${Math.round(amount).toLocaleString()} has been received. Your current balance is Ksh${Math.round(reducingBalance).toLocaleString()}`
-          }))
+        }
+      const r = balance - Number(amount);
+      const date = new Date().toISOString().slice(0, 10)
+      const days = new Date(date.replace(/-/g, "/")).getTime() - new Date(initiation.replace(/-/g, "/")).getTime();
+      const newrate = 1/30*rate/100;
+     const reducingBalance = ((r * newrate *days/(60 * 60 * 24 * 1000)) + r)
+      if(Number(amount) >= currentreducingbalance){
+             const b = Number(amount) - currentreducingbalance;
+          
+                dispatch(newSms({
+                  phonenumber:phonenumber,
+                  message:`Your loan has been cleared successfully.Your account balance is Ksh. ${b}. Thank you for choosing MariCredit.`
+                }))
+                dispatch(updateLoan({
+                  accountbalance:b,
+                  balance:r,
+                  active:true
+                })).then((response)=>{
+                     if(response.payload.success){
+                        dispatch(confirmPayment({
+                           email:email,
+                           fullname:fullname,
+                           amount:amount,
+                           balance:Math.round(Number(amount) - currentreducingbalance).toLocaleString(), 
+                        })).then((response)=>{
+                            console.log(response)
+                            if(response.payload.success){
+                              dispatch(newPayment({
+                                loanid:id,
+                                name:fullname,
+                                idnumber:idnumber,
+                                phonenumber:phonenumber,
+                                amount:amount,
+                                reducingbalance:Number(reducingBalance),
+                                transactioncode:code,
+                                mode:mode,
+                                product:product,
+                                addedBy:email2
+                              })).then((response)=>{
+                                if(response.payload.success){
+                                  setLoading(false);
+                                  Swal.fire(
+                                      "SUCCESS!",
+                                      "We received your loan payment",
+                                      "success"
+                                    );
+                                  setTimeout(()=>{
+                                      navigate('/viewpayment/'+id)
+                                  },3000)
+                                }
+                              })
+                            }
+                        })
+                     }
+                 
+                })
+      }else {
+        dispatch(newSms({
+          phonenumber:phonenumber,
+          message:`Your bank payment ${code}, of Ksh${Math.round(amount).toLocaleString()} has been received. Your current balance is Ksh${Math.round(reducingBalance).toLocaleString()}`
+      }))
       dispatch(updateLoan({
         balance:r
       })).then((response)=>{
-        if(response.payload.success){
-           dispatch(confirmPayment({
-              email:email,
-              fullname:fullname,
-              amount:amount,
-              balance:Math.round(reducingBalance).toLocaleString(), 
-           })).then((response)=>{
-               console.log(response)
-               if(response.payload.success){
-                   setLoading(false);
-                   Swal.fire(
-                       "SUCCESS!",
-                       "We received your loan payment",
-                       "success"
-                     );
-                   setTimeout(()=>{
-                       navigate('/viewpayment/'+id)
-                   },3000)
-               }
-           })
-        }
-    
-   })
-        }
+           if(response.payload.success){
+              dispatch(confirmPayment({
+                 email:email,
+                 fullname:fullname,
+                 amount:amount,
+                 balance:Math.round(reducingBalance).toLocaleString(), 
+              })).then((response)=>{
+                  console.log(response)
+                  if(response.payload.success){
+                    dispatch(newPayment({
+                      loanid:id,
+                      name:fullname,
+                      idnumber:idnumber,
+                      phonenumber:phonenumber,
+                      amount:amount,
+                      reducingbalance:Number(reducingBalance),
+                      transactioncode:code,
+                      mode:mode,
+                      product:product,
+                      addedBy:email2
+                    })).then((response)=>{
+                      if(response.payload.success){
+                        setLoading(false);
+                        Swal.fire(
+                            "SUCCESS!",
+                            "We received your loan payment",
+                            "success"
+                          );
+                        setTimeout(()=>{
+                            navigate('/viewpayment/'+id)
+                        },3000)
+                      }
+                    })
+                     
+                  }
+              })
+           }
+       
       })
-    }  
+      }
+    
+    
+      
     }
      useEffect(()=>{
      dispatch(getLoan())
@@ -223,6 +322,7 @@ export default function NewPayment(){
     return(
         <DashboardWrapper>
             <Toast/>
+          
 
            {!method && <div className="mt-2 ">
             <h4>Choose Payment Method</h4>

@@ -65,10 +65,16 @@ const getUserloans = async(req,res)=>{
     res.json({loan})
 }
 
+const addLoanField = async(req,res)=>{
+ const field =  await Loan.updateMany({}, { $set: { accountbalance: 0 } });
+ res.json({field})
+}
+
 
 
 
 module.exports = {
+addLoanField,
 getloans,
 getloan,
 myloans,

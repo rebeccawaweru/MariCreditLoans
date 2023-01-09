@@ -1,7 +1,7 @@
-import { FcHome,FcOpenedFolder,FcStatistics,FcFile,FcBookmark,FcElectricity,FcAdvertising,FcMoneyTransfer,FcPackage,FcUpLeft,FcDataProtection} from "react-icons/fc";
+import { FcHome,FcOpenedFolder,FcStatistics,FcFile,FcLock,FcMoneyTransfer,FcPackage,FcUpLeft,FcDataProtection} from "react-icons/fc";
 import CustomList from "./CustomList";
 import { useNavigate } from "react-router-dom";
-import { logout,reset } from "../redux/userSlice";
+import { logout } from "../redux/userSlice";
 import { useDispatch } from "react-redux";
 import {MdOutlineKeyboardArrowDown} from 'react-icons/md'
 import { useState } from "react";
@@ -28,6 +28,7 @@ export default function CustomSideBar(){
         <MdOutlineKeyboardArrowDown onClick={()=>setReports(true)} className="text-lg mt-1 "/>
         </div>
         {reports ? <> <CustomList icon={<FcFile className="mx-2"/>} title="Statements" onClick={()=>navigate('/statements')} />
+        <CustomList icon={<FcLock className="mx-2"/>} title="Closed Loans" onClick={()=>navigate('/closedloans')} />
         <CustomList icon={<FcStatistics className="mx-2"/>} title="Analytics" onClick={()=>navigate('/analysis')} /></> :null}
     
 
